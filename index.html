@@ -323,11 +323,11 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
       <div class="step-body">
         <div class="step-title">아래 코드를 복사해서 붙여넣기</div>
         <div class="step-desc">기존 코드를 모두 지우고 아래 코드로 교체하세요.</div>
-        <div class="code-block" id="codeBlock">function doGet(e) {
-  var action   = e.parameter.action   || 'load';
-  var callback = e.parameter.callback || '';
-  var ss       = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet    = getOrCreate(ss, 'DATA');
+        <div class="code-block" id="codeBlock">// ★ 이 코드를 Apps Script에 붙여넣으세요 ★
+function doGet(e) {
+  var action = e.parameter.action || 'load';
+  var ss     = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet  = getOrCreate(ss, 'DATA');
   var result;
 
   try {
@@ -351,15 +351,8 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
     result = { error: err.toString() };
   }
 
-  var output = JSON.stringify(result);
-  if (callback) {
-    // JSONP — CORS 우회
-    return ContentService
-      .createTextOutput(callback + '(' + output + ')')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
   return ContentService
-    .createTextOutput(output)
+    .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -658,28 +651,17 @@ function setSyncStatus(state, text){
   txt.textContent=text;
 }
 
-// ── JSONP 핵심 (CORS 우회) ─────────────────────────────
-function gsRequest(params) {
-  return new Promise((resolve, reject) => {
-    if (!gsUrl) { reject(new Error('URL 미설정')); return; }
-    const cbName = '__gs' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    let script;
-    const timer = setTimeout(() => { cleanup(); reject(new Error('시간 초과 (15초).')); }, 15000);
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[cbName];
-      if (script && script.parentNode) script.parentNode.removeChild(script);
-    }
-    window[cbName] = (data) => { cleanup(); resolve(data); };
-    const allParams = { ...params, callback: cbName, t: Date.now() };
-    const qs = Object.entries(allParams)
-      .map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(typeof v==='object'?JSON.stringify(v):v))
-      .join('&');
-    script = document.createElement('script');
-    script.src = gsUrl + '?' + qs;
-    script.onerror = () => { cleanup(); reject(new Error('스크립트 로드 실패. URL을 확인하세요.')); };
-    document.head.appendChild(script);
-  });
+// ── Google Sheets API (fetch — https 환경에서 작동) ────
+async function gsRequest(params) {
+  if (!gsUrl) throw new Error('URL 미설정');
+  const qs = Object.entries({...params, t: Date.now()})
+    .map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(typeof v==='object'?JSON.stringify(v):v))
+    .join('&');
+  const res = await fetch(gsUrl+'?'+qs, {redirect:'follow'});
+  if (!res.ok) throw new Error('HTTP '+res.status);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
 }
 
 async function loadFromSheets(){
@@ -688,7 +670,6 @@ async function loadFromSheets(){
   showLoading('Google Sheets에서 데이터 불러오는 중…');
   try{
     const data = await gsRequest({ action:'load' });
-    if(data.error) throw new Error(data.error);
     if(Array.isArray(data.drugs) && data.drugs.length>0){
       drugs=data.drugs;
       localStorage.setItem(SK_DRUGS,JSON.stringify(drugs));
@@ -706,7 +687,7 @@ async function loadFromSheets(){
     hideLoading();
     return true;
   }catch(e){
-    console.error('loadFromSheets error:',e);
+    console.error('loadFromSheets:',e);
     setSyncStatus('err','연결 오류 — 클릭하여 재시도');
     hideLoading();
     return false;
@@ -716,12 +697,11 @@ async function loadFromSheets(){
 async function saveToSheets(type, data){
   if(!gsUrl) return;
   try{
-    const result = await gsRequest({ action:'save', type, data: JSON.stringify(data) });
-    if(result.error) throw new Error(result.error);
+    await gsRequest({ action:'save', type, data: JSON.stringify(data) });
     lastSynced=new Date();
     setSyncStatus('ok','✓ 저장됨 '+lastSynced.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
-    console.error('saveToSheets error:',e);
+    console.error('saveToSheets:',e);
     setSyncStatus('err','저장 실패 — 클릭하여 재시도');
   }
 }
@@ -789,11 +769,11 @@ async function connectSheets(){
   }
   document.getElementById('connectHint').textContent='⏳ 연결 테스트 중…';
   document.getElementById('connectHint').style.color='var(--text-muted)';
-  // 임시로 gsUrl 설정 (gsRequest가 사용)
+  // 임시 테스트
+  const prevUrl = gsUrl;
   gsUrl = url;
   try{
     const data = await gsRequest({ action:'load' });
-    if(data.error) throw new Error(data.error);
     // 연결 성공
     localStorage.setItem(SK_URL, gsUrl);
     document.getElementById('connectHint').textContent='✅ 연결 성공! 데이터를 불러옵니다…';
@@ -813,10 +793,16 @@ async function connectSheets(){
       }
       setSyncStatus('ok','✓ 연결됨');
       renderAll();
-    },1200);
+    },1000);
   }catch(e){
-    gsUrl=''; // 실패 시 초기화
-    document.getElementById('connectHint').textContent='❌ 연결 실패: '+e.message;
+    gsUrl = prevUrl; // 실패 시 복원
+    let msg = e.message;
+    if(msg.includes('Failed to fetch')||msg.includes('Load failed')){
+      msg = 'Apps Script 배포 설정을 확인하세요 → 액세스: "모든 사용자"';
+    }
+    document.getElementById('connectHint').innerHTML =
+      '❌ 연결 실패: '+msg+
+      '<br><span style="font-size:11px;color:#64748b">배포 → 배포 관리 → 액세스 권한: <b>모든 사용자</b> 로 설정 후 재배포하세요</span>';
     document.getElementById('connectHint').style.color='var(--red)';
   }
 }
