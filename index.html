@@ -243,6 +243,16 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:14px;color:var(--text-sub);font-weight:500}
 
+/* ── CONNECT BANNER ── */
+.connect-banner{background:linear-gradient(135deg,#1a365d,#1e4976);color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cb-left{display:flex;align-items:center;gap:9px;font-size:13px}
+.cb-left b{font-weight:600}
+.cb-left small{opacity:.75;font-size:11px;display:block;margin-top:1px}
+.btn-cb-connect{padding:7px 16px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:12px;font-family:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn-cb-connect:hover{background:#0f766e}
+.btn-cb-skip{padding:6px 10px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
+/* ── SETUP as modal ── */
+#setupOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
 @media(max-width:800px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .table-head{display:none}
@@ -254,9 +264,27 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
 </head>
 <body>
 
-<!-- SETUP WIZARD -->
+<!-- CONNECT BANNER -->
+<div id="connectBanner" style="display:none">
+  <div class="connect-banner">
+    <div class="cb-left">
+      <span style="font-size:22px">☁️</span>
+      <div>
+        <b>Google Sheets 미연동 — 데이터가 이 기기에만 저장됩니다</b>
+        <small>연동하면 접수실·수술실·연구실 모든 PC에서 실시간 공유됩니다</small>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn-cb-skip" onclick="dismissBanner()">나중에</button>
+      <button class="btn-cb-connect" onclick="openSetupModal()">⚙️ 지금 연동하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP WIZARD (modal) -->
 <div id="setupOverlay" style="display:none">
-  <div class="setup-card">
+  <div class="setup-card" style="position:relative">
+    <button onclick="hideSetup()" style="position:absolute;top:14px;right:16px;background:transparent;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>
     <div class="setup-logo">💊</div>
     <div class="setup-title">Google Sheets 연동 설정</div>
     <div class="setup-sub">
@@ -736,16 +764,20 @@ async function save(){
 function showSetup(){document.getElementById('setupOverlay').style.display='flex';}
 function hideSetup(){document.getElementById('setupOverlay').style.display='none';}
 function openSetupModal(){
+  document.getElementById('connectBanner').style.display='none';
   document.getElementById('gsUrlInput').value=gsUrl||'';
   document.getElementById('connectHint').textContent=gsUrl?'현재 연결된 URL입니다. 변경하려면 새 URL을 입력하세요.':'URL을 입력하고 연결 확인 버튼을 누르세요.';
+  document.getElementById('connectHint').style.color='var(--text-muted)';
   showSetup();
+}
+function dismissBanner(){
+  document.getElementById('connectBanner').style.display='none';
+  localStorage.setItem('seouleye_banner_dismissed','1');
 }
 function skipSetup(){
   hideSetup();
+  dismissBanner();
   setSyncStatus('ing','오프라인 모드');
-  document.getElementById('syncDot').className='sync-dot ing';
-  document.getElementById('syncText').textContent='오프라인 모드';
-  document.getElementById('syncPill').className='sync-pill sync-ing';
 }
 
 async function connectSheets(){
@@ -1098,22 +1130,22 @@ async function init(){
   // 1. Load URL config
   gsUrl=localStorage.getItem(SK_URL)||'';
 
-  // 2. Load local data (fast)
+  // 2. Load local data → always show app immediately
   loadLocal();
   updateDate();
   renderAll();
 
-  // 3. If URL exists → sync from Sheets
+  // 3. Sync or show banner
   if(gsUrl){
+    setSyncStatus('ing','동기화 중…');
     const ok=await loadFromSheets();
     if(ok) renderAll();
   } else {
-    // First launch: show setup wizard
-    const hasData=localStorage.getItem(SK_DRUGS);
-    if(!hasData){
-      setTimeout(showSetup, 500);
-    } else {
-      setSyncStatus('ing','오프라인 모드');
+    setSyncStatus('ing','오프라인 모드');
+    // Show banner (non-blocking) unless user dismissed it before
+    const dismissed=localStorage.getItem('seouleye_banner_dismissed');
+    if(!dismissed){
+      setTimeout(()=>{ document.getElementById('connectBanner').style.display='block'; }, 400);
     }
   }
 }
