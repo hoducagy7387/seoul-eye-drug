@@ -243,6 +243,17 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:14px;color:var(--text-sub);font-weight:500}
 
+/* ── BAKE GUIDE ── */
+.bake-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px}
+.bake-card{background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:540px;box-shadow:var(--shadow-lg)}
+.bake-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:12px}
+.bake-desc{font-size:13px;color:var(--text-sub);line-height:1.7;margin-bottom:16px}
+.bake-code{background:#1e293b;color:#7dd3fc;border-radius:10px;padding:14px 16px;font-size:12px;font-family:'JetBrains Mono',monospace;word-break:break-all;line-height:1.6;position:relative;margin-bottom:8px}
+.bake-highlight{color:#fde68a;font-weight:700}
+.btn-bake-copy{position:absolute;top:8px;right:8px;padding:4px 10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit}
+.bake-steps{background:#f8fafc;border-radius:10px;padding:14px 16px;font-size:12px;color:var(--text-sub);line-height:2;margin-bottom:16px}
+.bake-steps b{color:var(--text)}
+
 /* ── CONNECT BANNER ── */
 .connect-banner{background:linear-gradient(135deg,#1a365d,#1e4976);color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .cb-left{display:flex;align-items:center;gap:9px;font-size:13px}
@@ -325,9 +336,10 @@ main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
         <div class="step-desc">기존 코드를 모두 지우고 아래 코드로 교체하세요.</div>
         <div class="code-block" id="codeBlock">// ★ 이 코드를 Apps Script에 붙여넣으세요 ★
 function doGet(e) {
-  var action = e.parameter.action || 'load';
-  var ss     = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet  = getOrCreate(ss, 'DATA');
+  var action   = e.parameter.action   || 'load';
+  var callback = e.parameter.callback || '';   // JSONP 지원
+  var ss       = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet    = getOrCreate(ss, 'DATA');
   var result;
 
   try {
@@ -351,8 +363,18 @@ function doGet(e) {
     result = { error: err.toString() };
   }
 
+  var json = JSON.stringify(result);
+
+  // JSONP 요청이면 callback(json) 형태로 반환 (CORS 우회)
+  if (callback) {
+    return ContentService
+      .createTextOutput(callback + '(' + json + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  // 일반 JSON 요청
   return ContentService
-    .createTextOutput(JSON.stringify(result))
+    .createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -569,9 +591,41 @@ function getOrCreate(ss, name) {
 
 <div class="toast-wrap" id="toastWrap"></div>
 
+<!-- BAKE GUIDE MODAL -->
+<div class="bake-overlay" id="bakeOverlay" style="display:none">
+  <div class="bake-card">
+    <div class="bake-title">🎉 연결 성공! — 이제 GitHub에 업데이트하세요</div>
+    <div class="bake-desc">
+      URL을 HTML 파일 안에 직접 넣으면 <b>다른 PC에서도 설정 없이 자동 연동</b>됩니다.<br>
+      GitHub 저장소의 <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">index.html</code>에서 아래 줄을 찾아 수정하세요.
+    </div>
+    <div class="bake-code" id="bakeCodeBlock">
+      <button class="btn-bake-copy" onclick="copyBakeCode()">📋 복사</button>
+      <span style="color:#94a3b8">// 수정 전</span><br>
+      const BAKED_GS_URL = <span class="bake-highlight">''</span>;<br><br>
+      <span style="color:#94a3b8">// 수정 후 (아래 URL을 그대로 복사)</span><br>
+      const BAKED_GS_URL = <span class="bake-highlight" id="bakeUrlDisplay">''</span>;
+    </div>
+    <div class="bake-steps">
+      <b>① GitHub 저장소</b> → index.html 클릭 → ✏️ 편집<br>
+      <b>② Ctrl+F</b> 로 <code>BAKED_GS_URL = ''</code> 검색<br>
+      <b>③</b> 위 URL로 교체 → <b>Commit changes</b><br>
+      <b>④</b> 이후 모든 PC에서 설정 없이 자동 동기화 ✓
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-cancel" onclick="document.getElementById('bakeOverlay').style.display='none'">나중에</button>
+      <button class="btn-save" onclick="document.getElementById('bakeOverlay').style.display='none'">확인</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════
 //  CONFIG
+// ═══════════════════════════════════════════════════════
+// ★★★ Google Sheets URL을 아래에 직접 입력하면 모든 PC가 자동 연동됩니다 ★★★
+// 예) const BAKED_GS_URL = 'https://script.google.com/macros/s/ABC.../exec';
+const BAKED_GS_URL = 'https://script.google.com/macros/s/AKfycbzdoF3tEt03hIJfd44GRADn1Z6Y19AsI41RzuyfG8KNzKIb7t9HfILWpXwAQmVwiAU7/exec';
 // ═══════════════════════════════════════════════════════
 const SK_URL  = 'seouleye_gs_url';
 const SK_DRUGS= 'seouleye_drugs_v4';
@@ -651,17 +705,63 @@ function setSyncStatus(state, text){
   txt.textContent=text;
 }
 
-// ── Google Sheets API (fetch — https 환경에서 작동) ────
-async function gsRequest(params) {
-  if (!gsUrl) throw new Error('URL 미설정');
-  const qs = Object.entries({...params, t: Date.now()})
-    .map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(typeof v==='object'?JSON.stringify(v):v))
-    .join('&');
-  const res = await fetch(gsUrl+'?'+qs, {redirect:'follow'});
-  if (!res.ok) throw new Error('HTTP '+res.status);
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
-  return data;
+// ── Google Sheets API — JSONP (CORS 완전 우회) ──────────
+function gsRequest(params) {
+  return new Promise((resolve, reject) => {
+    if (!gsUrl) { reject(new Error('URL 미설정')); return; }
+
+    // 고유 콜백 이름 생성
+    const cb = '_gs' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+    let done = false;
+
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error('응답 시간 초과 (20초). 네트워크 또는 배포 URL을 확인하세요.'));
+    }, 20000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cb];
+      const s = document.getElementById(cb);
+      if (s) s.remove();
+    }
+
+    window[cb] = (data) => {
+      if (done) return;
+      done = true;
+      cleanup();
+      if (data && data.error) { reject(new Error(data.error)); return; }
+      resolve(data);
+    };
+
+    // 파라미터 → query string
+    const allParams = { ...params, callback: cb, t: Date.now() };
+    const qs = Object.entries(allParams)
+      .map(([k,v]) => encodeURIComponent(k) + '=' +
+           encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v))
+      .join('&');
+
+    const script = document.createElement('script');
+    script.id  = cb;
+    script.src = gsUrl + '?' + qs;
+    script.onerror = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error(
+        '스크립트 로드 실패. 다음을 확인하세요:
+' +
+        '① 배포 URL이 /exec 로 끝나는지
+' +
+        '② 액세스 권한이 "모든 사용자" 인지
+' +
+        '③ 브라우저에서 직접 URL을 열었을 때 JSON이 보이는지'
+      ));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 async function loadFromSheets(){
@@ -670,18 +770,25 @@ async function loadFromSheets(){
   showLoading('Google Sheets에서 데이터 불러오는 중…');
   try{
     const data = await gsRequest({ action:'load' });
-    if(Array.isArray(data.drugs) && data.drugs.length>0){
-      drugs=data.drugs;
-      localStorage.setItem(SK_DRUGS,JSON.stringify(drugs));
+
+    const sheetsEmpty = !data.drugs || !Array.isArray(data.drugs) || data.drugs.length === 0;
+
+    if(sheetsEmpty){
+      // Sheets가 비어있음 → 현재 로컬 데이터(SAMPLE 포함)를 Sheets에 업로드
+      setSyncStatus('ing','첫 연결 — 데이터 업로드 중…');
+      await Promise.all([
+        gsRequest({ action:'save', type:'drugs', data: JSON.stringify(drugs) }),
+        gsRequest({ action:'save', type:'log',   data: JSON.stringify(usageLog) }),
+        gsRequest({ action:'save', type:'mgrs',  data: JSON.stringify(managers) }),
+      ]);
+    } else {
+      // Sheets에 데이터 있음 → 로컬에 반영
+      drugs    = data.drugs;
+      usageLog = Array.isArray(data.log)  ? data.log  : [];
+      managers = (data.mgrs && typeof data.mgrs==='object') ? data.mgrs : managers;
+      saveLocal();
     }
-    if(Array.isArray(data.log)){
-      usageLog=data.log;
-      localStorage.setItem(SK_LOG,JSON.stringify(usageLog));
-    }
-    if(data.mgrs && typeof data.mgrs==='object'){
-      managers=data.mgrs;
-      localStorage.setItem(SK_MGRS,JSON.stringify(managers));
-    }
+
     lastSynced=new Date();
     setSyncStatus('ok','✓ 동기화됨 '+lastSynced.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
     hideLoading();
@@ -780,33 +887,39 @@ async function connectSheets(){
     document.getElementById('connectHint').style.color='var(--green)';
     setTimeout(async()=>{
       hideSetup();
-      if(Array.isArray(data.drugs)&&data.drugs.length>0){
-        drugs=data.drugs; usageLog=data.log||[]; managers=data.mgrs||managers;
-        saveLocal();
-      } else {
-        toast('☁️ 첫 연결 — 로컬 데이터를 Google Sheets에 업로드합니다','ok');
-        await Promise.all([
-          saveToSheets('drugs',drugs),
-          saveToSheets('log',  usageLog),
-          saveToSheets('mgrs', managers)
-        ]);
-      }
+      // loadFromSheets가 빈 Sheets 처리 + 업로드까지 담당
+      const ok = await loadFromSheets();
+      if(ok) renderAll();
       setSyncStatus('ok','✓ 연결됨');
-      renderAll();
+      // URL이 파일에 고정되지 않은 경우 GitHub 업데이트 안내
+      if(!BAKED_GS_URL){
+        setTimeout(()=>{
+          showBakeGuide(gsUrl);
+        }, 1500);
+      }
     },1000);
   }catch(e){
     gsUrl = prevUrl; // 실패 시 복원
-    let msg = e.message;
-    if(msg.includes('Failed to fetch')||msg.includes('Load failed')){
-      msg = 'Apps Script 배포 설정을 확인하세요 → 액세스: "모든 사용자"';
-    }
+    const msg = e.message || '알 수 없는 오류';
     document.getElementById('connectHint').innerHTML =
-      '❌ 연결 실패: '+msg+
-      '<br><span style="font-size:11px;color:#64748b">배포 → 배포 관리 → 액세스 권한: <b>모든 사용자</b> 로 설정 후 재배포하세요</span>';
+      '<b>❌ 연결 실패</b><br>' + msg.replace(/\n/g,'<br>');
     document.getElementById('connectHint').style.color='var(--red)';
   }
 }
 
+function showBakeGuide(url){
+  document.getElementById('bakeUrlDisplay').textContent = "'"+url+"'";
+  document.getElementById('bakeOverlay').style.display='flex';
+}
+function copyBakeCode(){
+  const url=gsUrl;
+  const code="const BAKED_GS_URL = '"+url+"';";
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn=document.querySelector('.btn-bake-copy');
+    btn.textContent='✅ 복사됨';
+    setTimeout(()=>{btn.textContent='📋 복사';},2000);
+  });
+}
 function copyCode(){
   const code=document.getElementById('codeBlock').textContent;
   navigator.clipboard.writeText(code).then(()=>{
@@ -1113,22 +1226,23 @@ function toast(msg,type=''){
 //  INIT
 // ═══════════════════════════════════════════════════════
 async function init(){
-  // 1. Load URL config
-  gsUrl=localStorage.getItem(SK_URL)||'';
+  // 1. URL 우선순위: BAKED_GS_URL(파일에 직접 입력) > localStorage
+  gsUrl = BAKED_GS_URL || localStorage.getItem(SK_URL) || '';
+  // BAKED_GS_URL이 있으면 localStorage에도 저장 (설정 화면에 표시용)
+  if(BAKED_GS_URL) localStorage.setItem(SK_URL, BAKED_GS_URL);
 
-  // 2. Load local data → always show app immediately
+  // 2. 로컬 데이터 먼저 표시 (즉시)
   loadLocal();
   updateDate();
   renderAll();
 
-  // 3. Sync or show banner
+  // 3. Sheets 동기화 또는 배너 표시
   if(gsUrl){
     setSyncStatus('ing','동기화 중…');
     const ok=await loadFromSheets();
     if(ok) renderAll();
   } else {
     setSyncStatus('ing','오프라인 모드');
-    // Show banner (non-blocking) unless user dismissed it before
     const dismissed=localStorage.getItem('seouleye_banner_dismissed');
     if(!dismissed){
       setTimeout(()=>{ document.getElementById('connectBanner').style.display='block'; }, 400);
