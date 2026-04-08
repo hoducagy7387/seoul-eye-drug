@@ -780,15 +780,20 @@ function showApp() {
 // ═══════════════════════════════════════
 async function apiCall(action, body = null) {
   try {
+    // Google Apps Script는 POST→302 리다이렉트 시 body를 잃어버림
+    // 모든 요청을 GET + URL 파라미터로 처리
     let url = `${API_URL}?action=${action}`;
-    const opts = { redirect: 'follow' };
     if (body) {
-      opts.method = 'POST';
-      opts.headers = { 'Content-Type': 'text/plain' };
-      opts.body = JSON.stringify(body);
+      url += '&data=' + encodeURIComponent(JSON.stringify(body));
     }
-    const res = await fetch(url, opts);
-    return await res.json();
+    const res = await fetch(url, { redirect: 'follow' });
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch (pe) {
+      console.error('JSON parse error:', text.substring(0, 200));
+      return { success: false, error: '응답 파싱 실패. Apps Script URL을 확인하세요.' };
+    }
   } catch (e) {
     console.error('API error:', e);
     toast('서버 연결 실패. URL을 확인하세요.', 'error');
@@ -1107,7 +1112,7 @@ async function saveItem() {
 
 async function deleteItem(id, name) {
   if (!confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) return;
-  const result = await apiCall('delete&id=' + encodeURIComponent(id));
+  const result = await apiCall('delete&id=' + encodeURIComponent(id), null);
   if (result.success) {
     toast('삭제 완료', 'success');
     loadData();
