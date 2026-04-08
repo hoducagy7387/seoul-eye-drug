@@ -3,1260 +3,1147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>서울안과 약품 재고 관리</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>서울안과 약품 관리</title>
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
-:root{
-  --bg:#f0f4f8;--surface:#fff;--surface2:#f7fafc;--border:#e2e8f0;
-  --navy:#1a365d;--teal:#0d9488;--teal-light:#ccfbf1;
-  --red:#dc2626;--red-light:#fee2e2;--orange:#d97706;--orange-light:#fef3c7;
-  --green:#16a34a;--green-light:#dcfce7;
-  --text:#1e293b;--text-sub:#64748b;--text-muted:#94a3b8;
-  --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.04);
-  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);--radius:12px;
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --border: #e2e5ea;
+  --text: #1a1d23;
+  --text2: #5f6672;
+  --text3: #9aa0ab;
+  --primary: #2563eb;
+  --primary-light: #eff4ff;
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+  --danger-bg: #fee2e2;
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+  --warning-bg: #fef3c7;
+  --success: #10b981;
+  --success-light: #ecfdf5;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.08);
+  --radius: 10px;
+  --dept-접수실: #2563eb;
+  --dept-수술실: #7c3aed;
+  --dept-원무실: #0891b2;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+}
 
-/* ── HEADER ── */
-header{background:var(--navy);color:#fff;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.2)}
-.h-left{display:flex;align-items:center;gap:12px}
-.h-logo{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.h-title{font-size:16px;font-weight:600;letter-spacing:-0.3px}
-.h-sub{font-size:11px;color:#94a3b8;margin-top:1px}
-.h-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.h-date{font-size:12px;color:#94a3b8;font-family:'JetBrains Mono',monospace}
-.btn-header{padding:6px 13px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:7px;font-size:12px;font-family:inherit;font-weight:500;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:5px}
-.btn-header:hover{background:rgba(255,255,255,0.22)}
+/* ── Setup Screen ── */
+.setup-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.setup-box {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+.setup-box h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.setup-box .sub {
+  color: var(--text2);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+.setup-box label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.setup-box input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  margin-bottom: 20px;
+  outline: none;
+  transition: border .15s;
+}
+.setup-box input:focus { border-color: var(--primary); }
+.setup-box .hint {
+  text-align: left;
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: -14px;
+  margin-bottom: 20px;
+}
+.setup-box button {
+  width: 100%;
+  padding: 13px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.setup-box button:hover { opacity: .9; }
 
-/* sync pill */
-.sync-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500;cursor:pointer}
-.sync-ok   {background:rgba(22,163,74,0.25);color:#a7f3d0}
-.sync-err  {background:rgba(220,38,38,0.25);color:#fca5a5}
-.sync-ing  {background:rgba(255,255,255,0.1);color:#94a3b8}
-.sync-dot  {width:6px;height:6px;border-radius:50%;display:inline-block}
-.sync-dot.ok{background:#34d399}.sync-dot.err{background:#f87171}.sync-dot.ing{background:#94a3b8;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+/* ── Top Header ── */
+.top-bar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.top-bar .logo {
+  font-weight: 800;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-bar .logo .pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  color: #fff;
+}
+.top-bar .right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.top-bar .right .badge {
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: -4px;
+}
+.btn-icon {
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  cursor: pointer;
+  color: var(--text2);
+  transition: background .15s;
+}
+.btn-icon:hover { background: var(--bg); }
+.btn-settings {
+  font-size: 13px;
+  font-family: inherit;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  cursor: pointer;
+  color: var(--text2);
+}
+.btn-settings:hover { background: var(--bg); }
 
-/* ── DEPT TABS ── */
-.dept-tabs{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
-.dept-tabs-inner{max-width:1140px;margin:0 auto;padding:0 16px;display:flex;align-items:stretch}
-.dept-tab{padding:13px 20px;font-size:13px;font-weight:600;font-family:inherit;border:none;background:transparent;cursor:pointer;color:var(--text-muted);border-bottom:3px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
-.dept-tab:hover{color:var(--text)}
-.dept-tab.active{color:var(--navy);border-bottom-color:var(--navy)}
-.tab-count{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;background:#f1f5f9;color:var(--text-muted)}
-.dept-tab.active .tab-count{background:var(--navy);color:#fff}
-.tab-warn{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;background:var(--red-light);color:var(--red)}
+/* ── Department Tabs ── */
+.dept-tabs {
+  display: flex;
+  gap: 0;
+  padding: 16px 24px 0;
+}
+.dept-tab {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text3);
+  border-bottom: 2.5px solid transparent;
+  transition: all .15s;
+}
+.dept-tab:hover { color: var(--text); }
+.dept-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
 
-/* ── DEPT BAR ── */
-.dept-bar{background:var(--surface2);border-bottom:1px solid var(--border)}
-.dept-bar-inner{max-width:1140px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.mgr-chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.mgr-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--text-sub)}
-.mgr-chip strong{font-weight:600;color:var(--text)}
-.role-lbl{color:var(--text-muted);font-size:11px}
-.dept-chip-sm{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;display:inline-block}
-.btn-sm{font-size:11px;padding:5px 9px;border:1px solid var(--border);background:var(--surface);border-radius:6px;cursor:pointer;color:var(--text-sub);font-family:inherit;transition:all 0.15s;white-space:nowrap}
-.btn-sm:hover{border-color:#94a3b8}
+/* ── Main Content ── */
+.main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
 
-/* ── MAIN ── */
-main{max-width:1140px;margin:0 auto;padding:18px 16px 80px}
+/* ── Summary Cards ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.summary-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.summary-card .label {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.summary-card .value {
+  font-size: 26px;
+  font-weight: 800;
+}
+.summary-card.alert-card .value { color: var(--danger); }
+.summary-card.warn-card .value { color: var(--warning); }
 
-/* ── ALERTS ── */
-.alert-section{margin-bottom:14px;display:flex;flex-direction:column;gap:7px}
-.alert-banner{border-radius:var(--radius);padding:12px 16px;display:flex;align-items:flex-start;gap:10px;border:1px solid;cursor:pointer;transition:transform 0.1s,box-shadow 0.1s}
-.alert-banner:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
-.alert-banner.danger{background:var(--red-light);border-color:#fca5a5}
-.alert-banner.warn{background:var(--orange-light);border-color:#fcd34d}
-.alert-icon{font-size:16px;flex-shrink:0;margin-top:2px}
-.alert-title{font-size:13px;font-weight:600}
-.alert-banner.danger .alert-title{color:var(--red)}
-.alert-banner.warn .alert-title{color:var(--orange)}
-.alert-items{font-size:12px;color:var(--text-sub);margin-top:3px;line-height:1.7}
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-box {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--card);
+  outline: none;
+}
+.search-box input:focus { border-color: var(--primary); }
+.search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+}
+.filter-select {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+.btn-primary {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity .15s;
+  white-space: nowrap;
+}
+.btn-primary:hover { opacity: .9; }
 
-/* ── STATS ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:13px 15px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.stat-label{font-size:11px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
-.stat-value{font-size:24px;font-weight:700;margin-top:4px;font-family:'JetBrains Mono',monospace}
-.sv-total{color:var(--navy)}.sv-ok{color:var(--green)}.sv-red{color:var(--red)}.sv-warn{color:var(--orange)}
+/* ── Alert Banner ── */
+.alert-banner {
+  background: var(--danger-light);
+  border: 1px solid var(--danger-bg);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #991b1b;
+  line-height: 1.5;
+}
+.alert-banner.warn {
+  background: var(--warning-light);
+  border-color: var(--warning-bg);
+  color: #92400e;
+}
+.alert-banner svg { flex-shrink: 0; margin-top: 2px; }
+.alert-banner strong { font-weight: 700; }
+.alert-items { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.alert-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.alert-chip.exp { background: #fee2e2; color: #b91c1c; }
+.alert-chip.low { background: #fef3c7; color: #b45309; }
 
-/* ── CONTROLS ── */
-.controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px}
-.controls-left{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.search-box{padding:8px 13px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--surface);color:var(--text);width:180px;outline:none;transition:border-color 0.15s}
-.search-box:focus{border-color:var(--teal)}
-.filter-btn{padding:7px 13px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;cursor:pointer;background:var(--surface);color:var(--text-sub);transition:all 0.15s;white-space:nowrap}
-.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-add{padding:8px 17px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;transition:background 0.15s}
-.btn-add:hover{background:#0f766e}
+/* ── Table ── */
+.table-wrap {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+}
+thead th:hover { color: var(--text); }
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f1f4;
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #fafbfc; }
+.type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f0f1f4;
+  color: var(--text2);
+}
+.stock-bar {
+  width: 80px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.stock-bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.dept-label {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  color: #fff;
+}
+.actions-cell {
+  display: flex;
+  gap: 4px;
+}
+.btn-sm {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-sm:hover { background: var(--bg); }
+.btn-sm.del { color: var(--danger); border-color: #fecaca; }
+.btn-sm.del:hover { background: var(--danger-light); }
 
-/* ── TABLE ── */
-.table-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
-.table-head{display:grid;grid-template-columns:2.3fr 0.8fr 1.6fr 1.1fr 1fr 0.9fr 105px;padding:10px 15px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
-.drug-row{display:grid;grid-template-columns:2.3fr 0.8fr 1.6fr 1.1fr 1fr 0.9fr 105px;padding:12px 15px;border-bottom:1px solid var(--border);align-items:center;transition:background 0.1s;animation:rowIn 0.2s ease both}
-@keyframes rowIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.drug-row:last-child{border-bottom:none}
-.drug-row:hover{background:#f8fafc}
-.drug-row.row-red{background:#fff5f5}.drug-row.row-red:hover{background:#fff0f0}
-.drug-row.row-warn{background:#fffbf0}.drug-row.row-warn:hover{background:#fff8ec}
-.d-name{font-weight:600;font-size:13px;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.d-sub{font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px}
-.d-unit{font-size:12px;color:var(--text-sub)}
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn .15s;
+}
+@keyframes fadeIn { from { opacity: 0; } }
+.modal {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.15);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp .2s;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.modal-header h2 { font-size: 18px; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: var(--bg); border-radius: 8px;
+  cursor: pointer; color: var(--text2); font-size: 18px;
+}
+.modal-body { padding: 20px 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border .15s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--primary);
+}
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-footer {
+  padding: 0 24px 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-save {
+  padding: 10px 24px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn-save:hover { opacity: .9; }
 
-/* ── DEPT COLORS ── */
-.dept-접수실{background:#e0f2fe;color:#0369a1}
-.dept-수술실{background:#fce7f3;color:#9d174d}
-.dept-연구실{background:#ecfdf5;color:#065f46}
+/* ── Loading & Empty ── */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.loading .spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
 
-/* ── PKG BADGE ── */
-.pkg-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;border:1.5px solid}
-.pkg-box{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8}
-.pkg-bottle{background:#f0fdf4;border-color:#86efac;color:#15803d}
-.pkg-ampoule{background:#fdf4ff;border-color:#d8b4fe;color:#7e22ce}
-.pkg-tube{background:#fff7ed;border-color:#fdba74;color:#c2410c}
-.pkg-unit{background:#f8fafc;border-color:#cbd5e1;color:#475569}
-.pkg-bag{background:#fefce8;border-color:#fde047;color:#854d0e}
-.pkg-other{background:#f8fafc;border-color:#cbd5e1;color:#475569}
+/* ── Toast ── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--text);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  animation: toastIn .3s;
+  max-width: 320px;
+}
+.toast.error { background: var(--danger); }
+.toast.success { background: var(--success); }
+@keyframes toastIn { from { transform: translateY(20px); opacity: 0; } }
 
-/* ── STOCK BAR ── */
-.stock-nums{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);margin-bottom:4px}
-.stock-nums span{color:var(--text-muted)}
-.bar-bg{height:5px;background:#e2e8f0;border-radius:99px;overflow:hidden}
-.bar-fill{height:100%;border-radius:99px;transition:width 0.4s,background 0.3s}
-.bar-high{background:var(--green)}.bar-med{background:var(--teal)}.bar-low{background:var(--orange)}.bar-crit{background:var(--red)}
-
-/* ── EXPIRY / STATUS ── */
-.exp-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 7px;border-radius:20px;font-weight:500}
-.exp-ok{background:var(--green-light);color:var(--green)}.exp-warn{background:var(--orange-light);color:var(--orange)}
-.exp-danger{background:var(--red-light);color:var(--red)}.exp-expired{background:#f1f5f9;color:var(--text-muted)}
-.st-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 7px;border-radius:20px;font-weight:500}
-.st-ok{background:var(--green-light);color:var(--green)}.st-warn{background:var(--orange-light);color:var(--orange)}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.dot-ok{background:var(--green)}.dot-warn{background:var(--orange)}
-
-/* ── ACTION BUTTONS ── */
-.action-cell{display:flex;gap:5px}
-.btn-use{padding:5px 9px;background:var(--teal);color:#fff;border:none;border-radius:6px;font-size:11px;font-family:inherit;font-weight:600;cursor:pointer;transition:background 0.15s}
-.btn-use:hover{background:#0f766e}
-.btn-pencil{padding:5px 7px;background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;transition:all 0.15s}
-.btn-pencil:hover{border-color:var(--navy);color:var(--navy)}
-
-.empty-state{padding:55px 20px;text-align:center;color:var(--text-muted)}
-.empty-state .ei{font-size:36px;margin-bottom:10px}
-
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.2s}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:16px;padding:24px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);transform:translateY(14px) scale(0.98);transition:transform 0.2s;max-height:92vh;overflow-y:auto}
-.modal-overlay.open .modal{transform:none}
-.modal-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:18px}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--text-sub);margin-bottom:5px}
-.field input,.field select{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;transition:border-color 0.15s}
-.field input:focus,.field select:focus{border-color:var(--teal)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
-.btn-cancel{padding:9px 17px;border:1px solid var(--border);background:transparent;color:var(--text-sub);border-radius:8px;font-family:inherit;font-size:13px;cursor:pointer;transition:all 0.15s}
-.btn-cancel:hover{border-color:#94a3b8}
-.btn-save{padding:9px 21px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.15s}
-.btn-save:hover{background:#0f766e}
-.btn-del{padding:9px 13px;background:transparent;color:var(--red);border:1px solid #fca5a5;border-radius:8px;font-family:inherit;font-size:13px;cursor:pointer;margin-right:auto;transition:all 0.15s}
-.btn-del:hover{background:var(--red-light)}
-
-/* ── PKG / DEPT PICKERS ── */
-.pkg-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.pkg-btn{padding:6px 11px;border-radius:7px;border:1.5px solid var(--border);font-size:12px;font-family:inherit;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text-sub);transition:all 0.15s}
-.pkg-btn:hover{border-color:#94a3b8}
-.pkg-btn.sel{border-color:var(--teal);background:var(--teal-light);color:var(--teal)}
-.dept-picker{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-.dpick-btn{flex:1;min-width:80px;padding:10px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text-sub);transition:all 0.15s;text-align:center}
-.dpick-btn:hover{border-color:#94a3b8}
-.dpick-접수실{border-color:#0369a1;background:#e0f2fe;color:#0369a1}
-.dpick-수술실{border-color:#9d174d;background:#fce7f3;color:#9d174d}
-.dpick-연구실{border-color:#065f46;background:#ecfdf5;color:#065f46}
-
-/* ── USE MODAL ── */
-.use-info{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:15px;font-size:13px}
-.use-info strong{display:block;font-size:15px;margin-bottom:4px}
-.use-info span{color:var(--text-sub)}
-.qty-row{display:flex;align-items:center;gap:8px}
-.qty-row input{flex:1;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:18px;font-family:'JetBrains Mono',monospace;text-align:center;font-weight:600;color:var(--navy);outline:none}
-.qty-row input:focus{border-color:var(--teal)}
-.qty-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;font-size:20px;background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.1s;flex-shrink:0}
-.qty-btn:hover{background:var(--border)}
-
-/* ── MANAGER MODAL ── */
-.mgr-dept-block{background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--border)}
-.mgr-dept-label{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:7px}
-.mgr-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
-.mgr-item{display:flex;align-items:center;gap:6px}
-.mgr-item input{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;outline:none}
-.mgr-item input:focus{border-color:var(--teal)}
-.mgr-role-sel{width:110px;padding:7px 8px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;outline:none;background:#fff}
-.btn-rm{width:28px;height:28px;border:1px solid #fca5a5;background:transparent;color:var(--red);border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.btn-add-mgr{padding:6px 12px;background:transparent;border:1px dashed var(--border);border-radius:7px;font-size:12px;font-family:inherit;cursor:pointer;color:var(--text-muted);transition:all 0.15s;width:100%}
-.btn-add-mgr:hover{border-color:var(--teal);color:var(--teal)}
-
-/* ── LOG ── */
-.log-section{margin-top:20px}
-.log-title{font-size:13px;font-weight:600;color:var(--text-sub);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.log-list{display:flex;flex-direction:column;gap:1px}
-.log-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:6px;font-size:12px}
-.log-drug{font-weight:500;color:var(--text)}
-.log-detail{color:var(--text-muted);font-size:11px}
-.log-amt{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--red)}
-
-/* ── TOAST ── */
-.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:400;display:flex;flex-direction:column;gap:7px;pointer-events:none}
-.toast{background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);animation:toastIn 0.3s ease;display:flex;align-items:center;gap:8px}
-.toast.ok{background:#065f46}.toast.err{background:#991b1b}.toast.wrn{background:#92400e}
-@keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-
-/* ── SETUP WIZARD ── */
-#setupOverlay{position:fixed;inset:0;background:#f0f4f8;z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
-.setup-card{background:#fff;border-radius:20px;padding:36px 40px;width:100%;max-width:660px;box-shadow:var(--shadow-lg)}
-.setup-logo{width:48px;height:48px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
-.setup-title{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px}
-.setup-sub{font-size:14px;color:var(--text-sub);margin-bottom:28px;line-height:1.6}
-.setup-step{display:flex;gap:14px;margin-bottom:22px}
-.step-num{width:28px;height:28px;background:var(--navy);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px}
-.step-body{flex:1}
-.step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
-.step-desc{font-size:13px;color:var(--text-sub);line-height:1.7;margin-bottom:8px}
-.code-block{background:#1e293b;color:#e2e8f0;border-radius:10px;padding:14px 16px;font-size:12px;font-family:'JetBrains Mono',monospace;line-height:1.7;overflow-x:auto;white-space:pre;margin-top:6px;position:relative}
-.btn-copy{position:absolute;top:8px;right:8px;padding:4px 10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;transition:background 0.15s}
-.btn-copy:hover{background:rgba(255,255,255,0.22)}
-.setup-url-row{display:flex;gap:8px;margin-top:8px}
-.setup-url-input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.15s}
-.setup-url-input:focus{border-color:var(--teal)}
-.btn-connect{padding:10px 22px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap}
-.btn-connect:hover{background:#0f766e}
-.setup-hint{font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.6}
-.setup-divider{height:1px;background:var(--border);margin:24px 0}
-.btn-skip{padding:8px 16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;width:100%;margin-top:6px;transition:all 0.15s}
-.btn-skip:hover{border-color:#94a3b8;color:var(--text-sub)}
-
-/* ── LOADING ── */
-#loadingOverlay{position:fixed;inset:0;background:rgba(240,244,248,0.85);z-index:450;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:14px;color:var(--text-sub);font-weight:500}
-
-/* ── BAKE GUIDE ── */
-.bake-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px}
-.bake-card{background:#fff;border-radius:16px;padding:28px 32px;width:100%;max-width:540px;box-shadow:var(--shadow-lg)}
-.bake-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:12px}
-.bake-desc{font-size:13px;color:var(--text-sub);line-height:1.7;margin-bottom:16px}
-.bake-code{background:#1e293b;color:#7dd3fc;border-radius:10px;padding:14px 16px;font-size:12px;font-family:'JetBrains Mono',monospace;word-break:break-all;line-height:1.6;position:relative;margin-bottom:8px}
-.bake-highlight{color:#fde68a;font-weight:700}
-.btn-bake-copy{position:absolute;top:8px;right:8px;padding:4px 10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit}
-.bake-steps{background:#f8fafc;border-radius:10px;padding:14px 16px;font-size:12px;color:var(--text-sub);line-height:2;margin-bottom:16px}
-.bake-steps b{color:var(--text)}
-
-/* ── CONNECT BANNER ── */
-.connect-banner{background:linear-gradient(135deg,#1a365d,#1e4976);color:#fff;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.cb-left{display:flex;align-items:center;gap:9px;font-size:13px}
-.cb-left b{font-weight:600}
-.cb-left small{opacity:.75;font-size:11px;display:block;margin-top:1px}
-.btn-cb-connect{padding:7px 16px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:12px;font-family:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
-.btn-cb-connect:hover{background:#0f766e}
-.btn-cb-skip{padding:6px 10px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
-/* ── SETUP as modal ── */
-#setupOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
-@media(max-width:800px){
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .table-head{display:none}
-  .drug-row{display:flex;flex-direction:column;gap:8px;padding:14px 15px}
-  .dept-tab{padding:10px 13px;font-size:12px}
-  .setup-card{padding:24px 20px}
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .main { padding: 16px; }
+  .summary-row { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .top-bar { padding: 0 16px; }
+  .dept-tabs { padding: 12px 16px 0; overflow-x: auto; }
+  .toolbar { gap: 8px; }
+  .btn-primary span.label-text { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- CONNECT BANNER -->
-<div id="connectBanner" style="display:none">
-  <div class="connect-banner">
-    <div class="cb-left">
-      <span style="font-size:22px">☁️</span>
-      <div>
-        <b>Google Sheets 미연동 — 데이터가 이 기기에만 저장됩니다</b>
-        <small>연동하면 접수실·수술실·연구실 모든 PC에서 실시간 공유됩니다</small>
-      </div>
+<!-- ═══ Setup Screen ═══ -->
+<div id="setupScreen" class="setup-screen">
+  <div class="setup-box">
+    <h1>💊 서울안과 약품 관리</h1>
+    <p class="sub">Google Apps Script URL을 설정하세요</p>
+    <label>Apps Script 웹앱 URL</label>
+    <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/..." />
+    <p class="hint">Apps Script를 배포한 후 생성되는 URL을 붙여넣으세요</p>
+    <label>사용자 이름 (담당자명)</label>
+    <input type="text" id="userNameInput" placeholder="예: 김간호" />
+    <button onclick="saveSetup()">시작하기</button>
+    <p style="margin-top:16px;font-size:12px;color:var(--text3);">설정은 이 브라우저에 저장됩니다</p>
+  </div>
+</div>
+
+<!-- ═══ App ═══ -->
+<div id="app" style="display:none;">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">
+      💊 서울안과 약품관리
+      <span class="pill" id="myDeptBadge"></span>
     </div>
-    <div style="display:flex;gap:7px">
-      <button class="btn-cb-skip" onclick="dismissBanner()">나중에</button>
-      <button class="btn-cb-connect" onclick="openSetupModal()">⚙️ 지금 연동하기</button>
+    <div class="right">
+      <span id="alertCountArea"></span>
+      <span id="userName" style="font-weight:600;"></span>
+      <button class="btn-settings" onclick="openSetup()">⚙ 설정</button>
+      <button class="btn-icon" onclick="loadData()" title="새로고침">↻</button>
+    </div>
+  </div>
+
+  <!-- Dept Tabs -->
+  <div class="dept-tabs" id="deptTabs"></div>
+
+  <div class="main">
+    <!-- Summary -->
+    <div class="summary-row" id="summaryRow"></div>
+
+    <!-- Alerts -->
+    <div id="alertArea"></div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="약품명 검색..." oninput="renderTable()" />
+      </div>
+      <select class="filter-select" id="typeFilter" onchange="renderTable()">
+        <option value="">전체 종류</option>
+      </select>
+      <select class="filter-select" id="statusFilter" onchange="renderTable()">
+        <option value="">전체 상태</option>
+        <option value="normal">정상</option>
+        <option value="expiring">유효기간 임박</option>
+        <option value="low">재고 부족</option>
+        <option value="both">복합 경고</option>
+      </select>
+      <button class="btn-primary" onclick="openAddModal()">
+        <span style="font-size:18px;">+</span> <span class="label-text">약품 등록</span>
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('부서')">부서</th>
+            <th onclick="sortBy('약품명')">약품명</th>
+            <th onclick="sortBy('종류')">종류</th>
+            <th onclick="sortBy('수량')">재고</th>
+            <th onclick="sortBy('유효기간')">유효기간</th>
+            <th>상태</th>
+            <th onclick="sortBy('담당자')">담당자</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="loadingArea"></div>
+      <div id="emptyArea"></div>
     </div>
   </div>
 </div>
 
-<!-- SETUP WIZARD (modal) -->
-<div id="setupOverlay" style="display:none">
-  <div class="setup-card" style="position:relative">
-    <button onclick="hideSetup()" style="position:absolute;top:14px;right:16px;background:transparent;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>
-    <div class="setup-logo">💊</div>
-    <div class="setup-title">Google Sheets 연동 설정</div>
-    <div class="setup-sub">
-      아래 순서대로 설정하면 접수실·수술실·연구실 어느 PC에서 열어도<br>
-      <strong>모두 같은 데이터가 실시간으로 공유</strong>됩니다.
-    </div>
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
 
-    <!-- STEP 1 -->
-    <div class="setup-step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <div class="step-title">Google 스프레드시트 만들기</div>
-        <div class="step-desc">
-          <a href="https://sheets.new" target="_blank" style="color:var(--teal);font-weight:600">sheets.new</a>
-          에 접속하여 새 스프레드시트를 만드세요.<br>
-          이름은 자유롭게 지정 (예: <b>서울안과 약품재고</b>).
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 2 -->
-    <div class="setup-step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <div class="step-title">Apps Script 편집기 열기</div>
-        <div class="step-desc">
-          스프레드시트 상단 메뉴에서<br>
-          <b>확장 프로그램 → Apps Script</b> 클릭
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 3 -->
-    <div class="setup-step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <div class="step-title">아래 코드를 복사해서 붙여넣기</div>
-        <div class="step-desc">기존 코드를 모두 지우고 아래 코드로 교체하세요.</div>
-        <div class="code-block" id="codeBlock">// ★ 이 코드를 Apps Script에 붙여넣으세요 ★
-function doGet(e) {
-  var action   = e.parameter.action   || 'load';
-  var callback = e.parameter.callback || '';   // JSONP 지원
-  var ss       = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet    = getOrCreate(ss, 'DATA');
-  var result;
-
-  try {
-    if (action === 'load') {
-      result = {
-        drugs : parse(sheet.getRange('A1').getValue()),
-        log   : parse(sheet.getRange('B1').getValue()),
-        mgrs  : parse(sheet.getRange('C1').getValue())
-      };
-    } else if (action === 'save') {
-      var type = e.parameter.type;
-      var data = e.parameter.data;
-      if (type === 'drugs') sheet.getRange('A1').setValue(data);
-      if (type === 'log')   sheet.getRange('B1').setValue(data);
-      if (type === 'mgrs')  sheet.getRange('C1').setValue(data);
-      result = { ok: true };
-    } else {
-      result = { error: 'unknown action' };
-    }
-  } catch(err) {
-    result = { error: err.toString() };
-  }
-
-  var json = JSON.stringify(result);
-
-  // JSONP 요청이면 callback(json) 형태로 반환 (CORS 우회)
-  if (callback) {
-    return ContentService
-      .createTextOutput(callback + '(' + json + ')')
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-
-  // 일반 JSON 요청
-  return ContentService
-    .createTextOutput(json)
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function parse(val) {
-  try { return val ? JSON.parse(val) : null; }
-  catch(e) { return null; }
-}
-
-function getOrCreate(ss, name) {
-  return ss.getSheetByName(name) || ss.insertSheet(name);
-}</div>
-        <button class="btn-copy" onclick="copyCode()">📋 복사</button>
-      </div>
-    </div>
-
-    <!-- STEP 4 -->
-    <div class="setup-step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <div class="step-title">웹 앱으로 배포</div>
-        <div class="step-desc">
-          Apps Script 편집기 우측 상단 <b>배포 → 새 배포</b> 클릭<br>
-          ① 유형: <b>웹 앱</b> 선택<br>
-          ② 액세스 권한: <b>"모든 사용자"</b> 선택<br>
-          ③ <b>배포</b> 버튼 클릭 → 권한 승인 → 완료
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 5 -->
-    <div class="setup-step">
-      <div class="step-num">5</div>
-      <div class="step-body">
-        <div class="step-title">웹 앱 URL 붙여넣기</div>
-        <div class="step-desc">배포 완료 후 표시되는 URL을 아래에 입력하세요.</div>
-        <div class="setup-url-row">
-          <input class="setup-url-input" id="gsUrlInput" type="url"
-            placeholder="https://script.google.com/macros/s/…/exec">
-          <button class="btn-connect" onclick="connectSheets()">연결 확인</button>
-        </div>
-        <div class="setup-hint" id="connectHint">URL을 입력하고 연결 확인 버튼을 누르세요.</div>
-      </div>
-    </div>
-
-    <div class="setup-divider"></div>
-    <button class="btn-skip" onclick="skipSetup()">⏭ 우선 오프라인으로 사용하기 (나중에 연결 가능)</button>
-  </div>
-</div>
-
-<!-- LOADING -->
-<div id="loadingOverlay" style="display:none">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">데이터 불러오는 중…</div>
-</div>
-
-<!-- HEADER -->
-<header>
-  <div class="h-left">
-    <div class="h-logo">💊</div>
-    <div>
-      <div class="h-title">약품 재고 관리</div>
-      <div class="h-sub">서울안과 · 원내 의약품</div>
-    </div>
-  </div>
-  <div class="h-right">
-    <span class="h-date" id="currentDate"></span>
-    <span class="sync-pill sync-ing" id="syncPill" onclick="manualSync()" title="클릭하여 새로고침">
-      <span class="sync-dot ing" id="syncDot"></span>
-      <span id="syncText">연결 중…</span>
-    </span>
-    <button class="btn-header" onclick="openMgrModal()">👥 담당자</button>
-    <button class="btn-header" onclick="openSetupModal()">⚙️ 연동설정</button>
-  </div>
-</header>
-
-<!-- DEPT TABS -->
-<div class="dept-tabs">
-  <div class="dept-tabs-inner" id="deptTabs"></div>
-</div>
-
-<!-- DEPT BAR -->
-<div class="dept-bar">
-  <div class="dept-bar-inner">
-    <div class="mgr-chips" id="mgrChips"></div>
-    <button class="btn-sm" onclick="openMgrModal()">✎ 담당자 수정</button>
-  </div>
-</div>
-
-<main>
-  <div class="alert-section" id="alertSection"></div>
-  <div class="stats-row"    id="statsRow"></div>
-
-  <div class="controls">
-    <div class="controls-left">
-      <input class="search-box" type="text" placeholder="🔍 약품명 검색..." id="searchInput" oninput="renderTable()">
-      <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
-      <button class="filter-btn" onclick="setFilter('danger',this)">재고부족</button>
-      <button class="filter-btn" onclick="setFilter('expiring',this)">유효기간 임박</button>
-    </div>
-    <button class="btn-add" onclick="openAddModal()">＋ 약품 추가</button>
-  </div>
-
-  <div class="table-wrap">
-    <div class="table-head">
-      <div>약품명 / 포장</div><div>단위</div><div>재고 현황</div>
-      <div>유효기간</div><div>상태</div><div>담당자</div><div>작업</div>
-    </div>
-    <div id="drugTable"></div>
-  </div>
-
-  <div class="log-section">
-    <div class="log-title">
-      <span>📋 최근 사용 기록</span>
-      <button class="btn-pencil" style="font-size:11px" onclick="clearLog()">기록 삭제</button>
-    </div>
-    <div class="log-list" id="logList"></div>
-  </div>
-</main>
-
-<!-- ADD/EDIT DRUG MODAL -->
-<div class="modal-overlay" id="editModal">
+<!-- Modal -->
+<div id="modalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-title" id="modalTitle">📦 약품 추가</div>
-    <div class="field">
-      <label>부서 *</label>
-      <div class="dept-picker" id="deptPicker"></div>
-      <input type="hidden" id="fDept" value="접수실">
+    <div class="modal-header">
+      <h2 id="modalTitle">약품 등록</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="field">
-      <label>약품명 *</label>
-      <input type="text" id="fName" placeholder="예) 0.5% Proparacaine">
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>분류</label>
-        <select id="fCategory">
-          <option>점안마취제</option><option>산동제</option><option>항생제</option>
-          <option>항염증제</option><option>녹내장약</option><option>인공눈물</option>
-          <option>형광색소</option><option>주사제</option><option>소독제</option><option>기타</option>
+    <div class="modal-body">
+      <input type="hidden" id="editId" />
+      <div class="form-group">
+        <label>부서 *</label>
+        <select id="fDept">
+          <option value="접수실">접수실</option>
+          <option value="수술실">수술실</option>
+          <option value="원무실">원무실</option>
         </select>
       </div>
-      <div class="field">
-        <label>보관 위치</label>
-        <input type="text" id="fLocation" placeholder="예) 냉장고">
+      <div class="form-group">
+        <label>약품명 *</label>
+        <input type="text" id="fName" placeholder="예: 크라비트 안약 0.5%" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>종류 *</label>
+          <select id="fType">
+            <option value="안약">안약</option>
+            <option value="1회용 안약">1회용 안약</option>
+            <option value="안연고">안연고</option>
+            <option value="내복약">내복약</option>
+            <option value="주사제">주사제</option>
+            <option value="소모품">소모품</option>
+            <option value="박스">박스</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>유효기간 *</label>
+          <input type="date" id="fExp" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>현재 수량 *</label>
+          <input type="number" id="fQty" min="0" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label>초기(총) 수량 *</label>
+          <input type="number" id="fInitQty" min="1" placeholder="100" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>담당자</label>
+        <input type="text" id="fManager" />
+      </div>
+      <div class="form-group">
+        <label>메모</label>
+        <textarea id="fMemo" placeholder="특이사항, 보관조건 등"></textarea>
       </div>
     </div>
-    <div class="field">
-      <label>포장 형태 *</label>
-      <div class="pkg-picker" id="pkgPicker"></div>
-      <input type="hidden" id="fPkgType" value="bottle">
-      <input type="hidden" id="fUnit" value="병">
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>초기(최대) 수량 *</label>
-        <input type="number" id="fInitial" min="1">
-      </div>
-      <div class="field">
-        <label>현재 수량 *</label>
-        <input type="number" id="fCurrent" min="0">
-      </div>
-    </div>
-    <div class="field">
-      <label>유효기간 *</label>
-      <input type="date" id="fExpiry">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-del" id="btnDel" onclick="deleteDrug()" style="display:none">🗑 삭제</button>
-      <button class="btn-cancel" onclick="closeModal('editModal')">취소</button>
-      <button class="btn-save" onclick="saveDrug()">저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- USE MODAL -->
-<div class="modal-overlay" id="useModal">
-  <div class="modal" style="max-width:360px">
-    <div class="modal-title">💉 사용 기록</div>
-    <div class="use-info" id="useInfo"></div>
-    <div class="field">
-      <label>사용 수량</label>
-      <div class="qty-row">
-        <button class="qty-btn" onclick="adjQty(-1)">−</button>
-        <input type="number" id="useQty" value="1" min="1">
-        <button class="qty-btn" onclick="adjQty(1)">＋</button>
-      </div>
-    </div>
-    <div class="field">
-      <label>사용 목적 (선택)</label>
-      <select id="usePurpose">
-        <option value="">선택 안함</option>
-        <option>외래 처치</option><option>수술</option>
-        <option>검사</option><option>입원</option><option>기타</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('useModal')">취소</button>
-      <button class="btn-save" onclick="confirmUse()">사용 확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- MANAGER MODAL -->
-<div class="modal-overlay" id="mgrModal">
-  <div class="modal" style="max-width:520px">
-    <div class="modal-title">👥 부서별 담당자 관리</div>
-    <div id="mgrContent"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('mgrModal')">닫기</button>
-      <button class="btn-save" onclick="saveMgrs()">저장</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast-wrap" id="toastWrap"></div>
-
-<!-- BAKE GUIDE MODAL -->
-<div class="bake-overlay" id="bakeOverlay" style="display:none">
-  <div class="bake-card">
-    <div class="bake-title">🎉 연결 성공! — 이제 GitHub에 업데이트하세요</div>
-    <div class="bake-desc">
-      URL을 HTML 파일 안에 직접 넣으면 <b>다른 PC에서도 설정 없이 자동 연동</b>됩니다.<br>
-      GitHub 저장소의 <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">index.html</code>에서 아래 줄을 찾아 수정하세요.
-    </div>
-    <div class="bake-code" id="bakeCodeBlock">
-      <button class="btn-bake-copy" onclick="copyBakeCode()">📋 복사</button>
-      <span style="color:#94a3b8">// 수정 전</span><br>
-      const BAKED_GS_URL = <span class="bake-highlight">''</span>;<br><br>
-      <span style="color:#94a3b8">// 수정 후 (아래 URL을 그대로 복사)</span><br>
-      const BAKED_GS_URL = <span class="bake-highlight" id="bakeUrlDisplay">''</span>;
-    </div>
-    <div class="bake-steps">
-      <b>① GitHub 저장소</b> → index.html 클릭 → ✏️ 편집<br>
-      <b>② Ctrl+F</b> 로 <code>BAKED_GS_URL = ''</code> 검색<br>
-      <b>③</b> 위 URL로 교체 → <b>Commit changes</b><br>
-      <b>④</b> 이후 모든 PC에서 설정 없이 자동 동기화 ✓
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn-cancel" onclick="document.getElementById('bakeOverlay').style.display='none'">나중에</button>
-      <button class="btn-save" onclick="document.getElementById('bakeOverlay').style.display='none'">확인</button>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveItem()">저장</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  CONFIG
-// ═══════════════════════════════════════════════════════
-// ★★★ Google Sheets URL을 아래에 직접 입력하면 모든 PC가 자동 연동됩니다 ★★★
-// 예) const BAKED_GS_URL = 'https://script.google.com/macros/s/ABC.../exec';
-const BAKED_GS_URL = 'https://script.google.com/macros/s/AKfycbzdoF3tEt03hIJfd44GRADn1Z6Y19AsI41RzuyfG8KNzKIb7t9HfILWpXwAQmVwiAU7/exec';
-// ═══════════════════════════════════════════════════════
-const SK_URL  = 'seouleye_gs_url';
-const SK_DRUGS= 'seouleye_drugs_v4';
-const SK_LOG  = 'seouleye_log_v4';
-const SK_MGRS = 'seouleye_mgrs_v1';
+// ═══════════════════════════════════════
+// State
+// ═══════════════════════════════════════
+let API_URL = localStorage.getItem('drugApp_apiUrl') || '';
+let USER_NAME = localStorage.getItem('drugApp_userName') || '';
+let allData = [];
+let currentDept = '전체';
+let sortField = '약품명';
+let sortAsc = true;
+const DEPTS = ['전체', '접수실', '수술실', '원무실'];
+const DEPT_COLORS = { '접수실': '#2563eb', '수술실': '#7c3aed', '원무실': '#0891b2' };
+const DRUG_TYPES = ['안약', '1회용 안약', '안연고', '내복약', '주사제', '소모품', '박스', '기타'];
 
-const DEPTS = [
-  {id:'접수실', icon:'🏥', bg:'#e0f2fe', color:'#0369a1'},
-  {id:'수술실', icon:'🔬', bg:'#fce7f3', color:'#9d174d'},
-  {id:'연구실', icon:'🧪', bg:'#ecfdf5', color:'#065f46'},
-];
-const PKG_TYPES = [
-  {value:'box',    icon:'📦',label:'박스',unit:'박스'},
-  {value:'bottle', icon:'🫙',label:'병',  unit:'병'},
-  {value:'ampoule',icon:'💉',label:'앰플',unit:'앰플'},
-  {value:'tube',   icon:'🧴',label:'튜브',unit:'튜브'},
-  {value:'unit',   icon:'📌',label:'개',  unit:'개'},
-  {value:'bag',    icon:'🛍',label:'봉지',unit:'봉지'},
-  {value:'other',  icon:'📋',label:'기타',unit:'개'},
-];
+// ═══════════════════════════════════════
+// Init
+// ═══════════════════════════════════════
+function init() {
+  // Check URL params for dept
+  const params = new URLSearchParams(location.search);
+  const deptParam = params.get('dept');
+  if (deptParam && DEPTS.includes(deptParam)) {
+    currentDept = deptParam;
+  }
 
-// ═══════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════
-let drugs=[], usageLog=[], managers={};
-let gsUrl='';
-let activeDept='접수실', currentFilter='all';
-let editingId=null, usingId=null;
-let lastSynced=null;
-
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const daysFromNow = n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
-const getPkg = v=>PKG_TYPES.find(p=>p.value===v)||PKG_TYPES[6];
-const stockPct = d=>d.initial>0?(d.current/d.initial)*100:0;
-const isLow    = d=>stockPct(d)<=10;
-const daysLeft = d=>Math.ceil((new Date(d.expiry)-new Date().setHours(0,0,0,0))/86400000);
-const isSoon   = d=>{const n=daysLeft(d);return n>0&&n<=31;};
-const isExp    = d=>daysLeft(d)<=0;
-const status   = d=>isExp(d)?'expired':(isLow(d)||isSoon(d))?'warn':'ok';
-const pkgBadge = v=>{const p=getPkg(v);return `<span class="pkg-badge pkg-${v||'other'}">${p.icon} ${p.label}</span>`;};
-const dChip    = id=>`<span class="dept-chip-sm dept-${id}">${id}</span>`;
-
-// ═══════════════════════════════════════════════════════
-//  SAMPLE DATA
-// ═══════════════════════════════════════════════════════
-const SAMPLE=[
-  {id:uid(),dept:'접수실',name:'인공눈물 (Hylo-Comod)',category:'인공눈물',pkgType:'bottle',unit:'병',initial:24,current:3,expiry:daysFromNow(400),location:'접수 데스크'},
-  {id:uid(),dept:'접수실',name:'Fluorescein 2%',category:'형광색소',pkgType:'ampoule',unit:'앰플',initial:30,current:28,expiry:daysFromNow(180),location:'검사실'},
-  {id:uid(),dept:'접수실',name:'Tropicamide 0.5%',category:'산동제',pkgType:'box',unit:'박스',initial:5,current:1,expiry:daysFromNow(25),location:'검사실 서랍'},
-  {id:uid(),dept:'접수실',name:'0.5% Proparacaine',category:'점안마취제',pkgType:'bottle',unit:'병',initial:10,current:1,expiry:daysFromNow(200),location:'검사실'},
-  {id:uid(),dept:'수술실',name:'Intracameral Moxifloxacin',category:'주사제',pkgType:'ampoule',unit:'앰플',initial:20,current:18,expiry:daysFromNow(60),location:'수술실 냉장고'},
-  {id:uid(),dept:'수술실',name:'BSS Plus 500ml',category:'관류액',pkgType:'box',unit:'박스',initial:6,current:1,expiry:daysFromNow(300),location:'수술실 선반'},
-  {id:uid(),dept:'수술실',name:'Betadine 10%',category:'소독제',pkgType:'bottle',unit:'병',initial:12,current:10,expiry:daysFromNow(365),location:'수술실'},
-  {id:uid(),dept:'수술실',name:'Betamethasone 0.1%',category:'항염증제',pkgType:'box',unit:'박스',initial:10,current:9,expiry:daysFromNow(15),location:'수술실 캐비닛'},
-  {id:uid(),dept:'연구실',name:'Moxifloxacin 0.5%',category:'항생제',pkgType:'bottle',unit:'병',initial:12,current:10,expiry:daysFromNow(365),location:'연구실 냉장고'},
-  {id:uid(),dept:'연구실',name:'Latanoprost 0.005%',category:'녹내장약',pkgType:'bottle',unit:'병',initial:10,current:8,expiry:daysFromNow(90),location:'연구실 냉장고'},
-  {id:uid(),dept:'연구실',name:'Tetracycline 안연고',category:'항생제',pkgType:'tube',unit:'튜브',initial:20,current:15,expiry:daysFromNow(500),location:'연구실 선반'},
-];
-const SAMPLE_MGRS={
-  '접수실':[{name:'김민지',role:'수간호사'},{name:'이수정',role:'담당간호사'}],
-  '수술실':[{name:'박지영',role:'수술실 책임'}],
-  '연구실':[{name:'최은경',role:'담당간호사'}],
-};
-
-// ═══════════════════════════════════════════════════════
-//  GOOGLE SHEETS API
-// ═══════════════════════════════════════════════════════
-function setSyncStatus(state, text){
-  const pill=document.getElementById('syncPill');
-  const dot=document.getElementById('syncDot');
-  const txt=document.getElementById('syncText');
-  pill.className='sync-pill sync-'+state;
-  dot.className='sync-dot '+state;
-  txt.textContent=text;
-}
-
-// ── Google Sheets API — JSONP (CORS 완전 우회) ──────────
-function gsRequest(params) {
-  return new Promise((resolve, reject) => {
-    if (!gsUrl) { reject(new Error('URL 미설정')); return; }
-
-    // 고유 콜백 이름 생성
-    const cb = '_gs' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-    let done = false;
-
-    const timer = setTimeout(() => {
-      if (done) return;
-      done = true;
-      cleanup();
-      reject(new Error('응답 시간 초과 (20초). 네트워크 또는 배포 URL을 확인하세요.'));
-    }, 20000);
-
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[cb];
-      const s = document.getElementById(cb);
-      if (s) s.remove();
-    }
-
-    window[cb] = (data) => {
-      if (done) return;
-      done = true;
-      cleanup();
-      if (data && data.error) { reject(new Error(data.error)); return; }
-      resolve(data);
-    };
-
-    // 파라미터 → query string
-    const allParams = { ...params, callback: cb, t: Date.now() };
-    const qs = Object.entries(allParams)
-      .map(([k,v]) => encodeURIComponent(k) + '=' +
-           encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v))
-      .join('&');
-
-    const script = document.createElement('script');
-    script.id  = cb;
-    script.src = gsUrl + '?' + qs;
-    script.onerror = () => {
-      if (done) return;
-      done = true;
-      cleanup();
-      reject(new Error(
-        '스크립트 로드 실패. 다음을 확인하세요:
-' +
-        '① 배포 URL이 /exec 로 끝나는지
-' +
-        '② 액세스 권한이 "모든 사용자" 인지
-' +
-        '③ 브라우저에서 직접 URL을 열었을 때 JSON이 보이는지'
-      ));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-async function loadFromSheets(){
-  if(!gsUrl) return false;
-  setSyncStatus('ing','동기화 중…');
-  showLoading('Google Sheets에서 데이터 불러오는 중…');
-  try{
-    const data = await gsRequest({ action:'load' });
-
-    const sheetsEmpty = !data.drugs || !Array.isArray(data.drugs) || data.drugs.length === 0;
-
-    if(sheetsEmpty){
-      // Sheets가 비어있음 → 현재 로컬 데이터(SAMPLE 포함)를 Sheets에 업로드
-      setSyncStatus('ing','첫 연결 — 데이터 업로드 중…');
-      await Promise.all([
-        gsRequest({ action:'save', type:'drugs', data: JSON.stringify(drugs) }),
-        gsRequest({ action:'save', type:'log',   data: JSON.stringify(usageLog) }),
-        gsRequest({ action:'save', type:'mgrs',  data: JSON.stringify(managers) }),
-      ]);
-    } else {
-      // Sheets에 데이터 있음 → 로컬에 반영
-      drugs    = data.drugs;
-      usageLog = Array.isArray(data.log)  ? data.log  : [];
-      managers = (data.mgrs && typeof data.mgrs==='object') ? data.mgrs : managers;
-      saveLocal();
-    }
-
-    lastSynced=new Date();
-    setSyncStatus('ok','✓ 동기화됨 '+lastSynced.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
-    hideLoading();
-    return true;
-  }catch(e){
-    console.error('loadFromSheets:',e);
-    setSyncStatus('err','연결 오류 — 클릭하여 재시도');
-    hideLoading();
-    return false;
+  if (!API_URL || !USER_NAME) {
+    document.getElementById('setupScreen').style.display = '';
+    document.getElementById('app').style.display = 'none';
+    // Pre-fill if exists
+    if (API_URL) document.getElementById('apiUrlInput').value = API_URL;
+    if (USER_NAME) document.getElementById('userNameInput').value = USER_NAME;
+  } else {
+    showApp();
   }
 }
 
-async function saveToSheets(type, data){
-  if(!gsUrl) return;
-  try{
-    await gsRequest({ action:'save', type, data: JSON.stringify(data) });
-    lastSynced=new Date();
-    setSyncStatus('ok','✓ 저장됨 '+lastSynced.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
-  }catch(e){
-    console.error('saveToSheets:',e);
-    setSyncStatus('err','저장 실패 — 클릭하여 재시도');
+function saveSetup() {
+  const url = document.getElementById('apiUrlInput').value.trim();
+  const name = document.getElementById('userNameInput').value.trim();
+  if (!url) { toast('Apps Script URL을 입력하세요', 'error'); return; }
+  if (!name) { toast('사용자 이름을 입력하세요', 'error'); return; }
+  API_URL = url;
+  USER_NAME = name;
+  localStorage.setItem('drugApp_apiUrl', url);
+  localStorage.setItem('drugApp_userName', name);
+  showApp();
+}
+
+function openSetup() {
+  document.getElementById('setupScreen').style.display = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('apiUrlInput').value = API_URL;
+  document.getElementById('userNameInput').value = USER_NAME;
+}
+
+function showApp() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  document.getElementById('userName').textContent = USER_NAME;
+  renderDeptTabs();
+  loadData();
+}
+
+// ═══════════════════════════════════════
+// API
+// ═══════════════════════════════════════
+async function apiCall(action, body = null) {
+  try {
+    let url = `${API_URL}?action=${action}`;
+    const opts = { redirect: 'follow' };
+    if (body) {
+      opts.method = 'POST';
+      opts.headers = { 'Content-Type': 'text/plain' };
+      opts.body = JSON.stringify(body);
+    }
+    const res = await fetch(url, opts);
+    return await res.json();
+  } catch (e) {
+    console.error('API error:', e);
+    toast('서버 연결 실패. URL을 확인하세요.', 'error');
+    return { success: false, error: e.message };
   }
 }
 
-async function manualSync(){
-  if(!gsUrl){openSetupModal();return;}
-  await loadFromSheets();
+async function loadData() {
+  showLoading(true);
+  const result = await apiCall('getAll');
+  showLoading(false);
+  if (result.success) {
+    allData = result.data || [];
+    updateTypeFilter();
+    renderAll();
+    toast('데이터 불러옴', 'success');
+  } else {
+    toast('데이터 로드 실패: ' + (result.error || ''), 'error');
+  }
+}
+
+// ═══════════════════════════════════════
+// Render
+// ═══════════════════════════════════════
+function renderDeptTabs() {
+  const c = document.getElementById('deptTabs');
+  c.innerHTML = DEPTS.map(d =>
+    `<button class="dept-tab ${d === currentDept ? 'active' : ''}" onclick="switchDept('${d}')">${d}</button>`
+  ).join('');
+
+  // My dept badge
+  const badge = document.getElementById('myDeptBadge');
+  if (currentDept !== '전체') {
+    badge.textContent = currentDept;
+    badge.style.background = DEPT_COLORS[currentDept] || '#666';
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function switchDept(d) {
+  currentDept = d;
+  renderDeptTabs();
   renderAll();
 }
 
-// ═══════════════════════════════════════════════════════
-//  LOCAL STORAGE (fallback)
-// ═══════════════════════════════════════════════════════
-function loadLocal(){
-  try{
-    drugs   =JSON.parse(localStorage.getItem(SK_DRUGS))||SAMPLE;
-    usageLog=JSON.parse(localStorage.getItem(SK_LOG))  ||[];
-    managers=JSON.parse(localStorage.getItem(SK_MGRS)) ||SAMPLE_MGRS;
-  }catch{drugs=SAMPLE;usageLog=[];managers=SAMPLE_MGRS;}
-}
-function saveLocal(){
-  localStorage.setItem(SK_DRUGS,JSON.stringify(drugs));
-  localStorage.setItem(SK_LOG,  JSON.stringify(usageLog));
-  localStorage.setItem(SK_MGRS, JSON.stringify(managers));
-}
-async function save(){
-  saveLocal();
-  if(gsUrl){
-    await Promise.all([
-      saveToSheets('drugs',drugs),
-      saveToSheets('log',  usageLog.slice(-50)),
-      saveToSheets('mgrs', managers)
-    ]);
+function getFiltered() {
+  let items = [...allData];
+
+  // Dept filter
+  if (currentDept !== '전체') {
+    items = items.filter(i => i['부서'] === currentDept);
   }
+
+  // Search
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (q) {
+    items = items.filter(i => (i['약품명'] || '').toLowerCase().includes(q));
+  }
+
+  // Type filter
+  const tf = document.getElementById('typeFilter').value;
+  if (tf) {
+    items = items.filter(i => i['종류'] === tf);
+  }
+
+  // Status filter
+  const sf = document.getElementById('statusFilter').value;
+  if (sf) {
+    items = items.filter(i => {
+      const s = getStatus(i);
+      if (sf === 'normal') return s.level === 'ok';
+      if (sf === 'expiring') return s.expiring;
+      if (sf === 'low') return s.lowStock;
+      if (sf === 'both') return s.expiring && s.lowStock;
+      return true;
+    });
+  }
+
+  // Sort
+  items.sort((a, b) => {
+    let va = a[sortField] ?? '';
+    let vb = b[sortField] ?? '';
+    if (sortField === '수량') { va = Number(va); vb = Number(vb); }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  return items;
 }
 
-// ═══════════════════════════════════════════════════════
-//  SETUP WIZARD
-// ═══════════════════════════════════════════════════════
-function showSetup(){document.getElementById('setupOverlay').style.display='flex';}
-function hideSetup(){document.getElementById('setupOverlay').style.display='none';}
-function openSetupModal(){
-  document.getElementById('connectBanner').style.display='none';
-  document.getElementById('gsUrlInput').value=gsUrl||'';
-  document.getElementById('connectHint').textContent=gsUrl?'현재 연결된 URL입니다. 변경하려면 새 URL을 입력하세요.':'URL을 입력하고 연결 확인 버튼을 누르세요.';
-  document.getElementById('connectHint').style.color='var(--text-muted)';
-  showSetup();
-}
-function dismissBanner(){
-  document.getElementById('connectBanner').style.display='none';
-  localStorage.setItem('seouleye_banner_dismissed','1');
-}
-function skipSetup(){
-  hideSetup();
-  dismissBanner();
-  setSyncStatus('ing','오프라인 모드');
+function getStatus(item) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const exp = new Date(item['유효기간']);
+  const daysLeft = Math.ceil((exp - today) / 86400000);
+  const expiring = daysLeft <= 30;
+  const expired = daysLeft < 0;
+
+  const qty = Number(item['수량']) || 0;
+  const init = Number(item['초기수량']) || 1;
+  const pct = (qty / init) * 100;
+  const lowStock = pct <= 10;
+
+  let level = 'ok';
+  if (expired || (expiring && lowStock)) level = 'critical';
+  else if (expiring || lowStock) level = 'warning';
+
+  return { expiring, expired, lowStock, daysLeft, pct, level, qty, init };
 }
 
-async function connectSheets(){
-  const url=document.getElementById('gsUrlInput').value.trim();
-  if(!url||!url.startsWith('https://script.google.com')){
-    document.getElementById('connectHint').textContent='⚠️ 올바른 Google Apps Script URL을 입력하세요.';
-    document.getElementById('connectHint').style.color='var(--red)';
+function renderAll() {
+  renderSummary();
+  renderAlerts();
+  renderTable();
+}
+
+function renderSummary() {
+  const items = currentDept === '전체' ? allData : allData.filter(i => i['부서'] === currentDept);
+  const total = items.length;
+  let expCount = 0, lowCount = 0;
+  items.forEach(i => {
+    const s = getStatus(i);
+    if (s.expiring || s.expired) expCount++;
+    if (s.lowStock) lowCount++;
+  });
+
+  document.getElementById('summaryRow').innerHTML = `
+    <div class="summary-card"><div class="label">총 약품 수</div><div class="value">${total}</div></div>
+    <div class="summary-card ${expCount ? 'alert-card' : ''}"><div class="label">유효기간 임박/만료</div><div class="value">${expCount}</div></div>
+    <div class="summary-card ${lowCount ? 'warn-card' : ''}"><div class="label">재고 부족 (≤10%)</div><div class="value">${lowCount}</div></div>
+    <div class="summary-card"><div class="label">부서</div><div class="value" style="font-size:18px;">${currentDept === '전체' ? '3개 부서' : currentDept}</div></div>
+  `;
+
+  // Alert count in header
+  const alertTotal = expCount + lowCount;
+  document.getElementById('alertCountArea').innerHTML = alertTotal ?
+    `<span class="badge" title="경고 항목">${alertTotal}</span>` : '';
+}
+
+function renderAlerts() {
+  const items = currentDept === '전체' ? allData : allData.filter(i => i['부서'] === currentDept);
+  const expItems = [];
+  const lowItems = [];
+
+  items.forEach(i => {
+    const s = getStatus(i);
+    if (s.expired) expItems.push({ name: i['약품명'], dept: i['부서'], msg: '만료됨' });
+    else if (s.expiring) expItems.push({ name: i['약품명'], dept: i['부서'], msg: `${s.daysLeft}일 남음` });
+    if (s.lowStock) lowItems.push({ name: i['약품명'], dept: i['부서'], msg: `${Math.round(s.pct)}% 잔여` });
+  });
+
+  let html = '';
+
+  if (expItems.length) {
+    html += `<div class="alert-banner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>유효기간 경고 (${expItems.length}건)</strong>
+        <div class="alert-items">${expItems.map(e => `<span class="alert-chip exp">${e.dept} · ${e.name} — ${e.msg}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }
+
+  if (lowItems.length) {
+    html += `<div class="alert-banner warn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div><strong>재고 부족 경고 (${lowItems.length}건)</strong>
+        <div class="alert-items">${lowItems.map(e => `<span class="alert-chip low">${e.dept} · ${e.name} — ${e.msg}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('alertArea').innerHTML = html;
+}
+
+function renderTable() {
+  const items = getFiltered();
+  const tbody = document.getElementById('tableBody');
+
+  if (!items.length) {
+    tbody.innerHTML = '';
+    document.getElementById('emptyArea').innerHTML = `
+      <div class="empty-state"><div class="icon">📦</div><p>등록된 약품이 없습니다</p></div>`;
     return;
   }
-  document.getElementById('connectHint').textContent='⏳ 연결 테스트 중…';
-  document.getElementById('connectHint').style.color='var(--text-muted)';
-  // 임시 테스트
-  const prevUrl = gsUrl;
-  gsUrl = url;
-  try{
-    const data = await gsRequest({ action:'load' });
-    // 연결 성공
-    localStorage.setItem(SK_URL, gsUrl);
-    document.getElementById('connectHint').textContent='✅ 연결 성공! 데이터를 불러옵니다…';
-    document.getElementById('connectHint').style.color='var(--green)';
-    setTimeout(async()=>{
-      hideSetup();
-      // loadFromSheets가 빈 Sheets 처리 + 업로드까지 담당
-      const ok = await loadFromSheets();
-      if(ok) renderAll();
-      setSyncStatus('ok','✓ 연결됨');
-      // URL이 파일에 고정되지 않은 경우 GitHub 업데이트 안내
-      if(!BAKED_GS_URL){
-        setTimeout(()=>{
-          showBakeGuide(gsUrl);
-        }, 1500);
-      }
-    },1000);
-  }catch(e){
-    gsUrl = prevUrl; // 실패 시 복원
-    const msg = e.message || '알 수 없는 오류';
-    document.getElementById('connectHint').innerHTML =
-      '<b>❌ 연결 실패</b><br>' + msg.replace(/\n/g,'<br>');
-    document.getElementById('connectHint').style.color='var(--red)';
-  }
-}
+  document.getElementById('emptyArea').innerHTML = '';
 
-function showBakeGuide(url){
-  document.getElementById('bakeUrlDisplay').textContent = "'"+url+"'";
-  document.getElementById('bakeOverlay').style.display='flex';
-}
-function copyBakeCode(){
-  const url=gsUrl;
-  const code="const BAKED_GS_URL = '"+url+"';";
-  navigator.clipboard.writeText(code).then(()=>{
-    const btn=document.querySelector('.btn-bake-copy');
-    btn.textContent='✅ 복사됨';
-    setTimeout(()=>{btn.textContent='📋 복사';},2000);
-  });
-}
-function copyCode(){
-  const code=document.getElementById('codeBlock').textContent;
-  navigator.clipboard.writeText(code).then(()=>{
-    const btn=document.querySelector('.btn-copy');
-    btn.textContent='✅ 복사됨';
-    setTimeout(()=>{btn.textContent='📋 복사';},2000);
-  });
-}
+  tbody.innerHTML = items.map(item => {
+    const s = getStatus(item);
+    const deptColor = DEPT_COLORS[item['부서']] || '#888';
 
-// ═══════════════════════════════════════════════════════
-//  LOADING OVERLAY
-// ═══════════════════════════════════════════════════════
-function showLoading(t){
-  document.getElementById('loadingText').textContent=t||'처리 중…';
-  document.getElementById('loadingOverlay').style.display='flex';
-}
-function hideLoading(){document.getElementById('loadingOverlay').style.display='none';}
+    // Stock bar color
+    let barColor = '#10b981';
+    if (s.pct <= 10) barColor = '#ef4444';
+    else if (s.pct <= 30) barColor = '#f59e0b';
 
-// ═══════════════════════════════════════════════════════
-//  RENDER
-// ═══════════════════════════════════════════════════════
-function renderAll(){updateDate();renderTabs();renderBar();renderAlerts();renderStats();renderTable();renderLog();}
+    // Exp display
+    let expDisplay = item['유효기간'] || '-';
+    let expClass = '';
+    if (s.expired) { expDisplay += ' (만료)'; expClass = 'color:var(--danger);font-weight:700;'; }
+    else if (s.expiring) { expDisplay += ` (${s.daysLeft}일)` ; expClass = 'color:var(--warning);font-weight:600;'; }
 
-function updateDate(){
-  document.getElementById('currentDate').textContent=
-    new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
-}
+    // Status
+    let statusHtml = '<span class="status-dot" style="background:#10b981;"></span>정상';
+    if (s.level === 'critical') statusHtml = '<span class="status-dot" style="background:#ef4444;"></span>위험';
+    else if (s.level === 'warning') statusHtml = '<span class="status-dot" style="background:#f59e0b;"></span>주의';
 
-function renderTabs(){
-  document.getElementById('deptTabs').innerHTML=
-    [{id:'전체',icon:'📋'},...DEPTS].map(dep=>{
-      const list=dep.id==='전체'?drugs:drugs.filter(d=>d.dept===dep.id);
-      const warn=list.filter(d=>isLow(d)||isSoon(d)||isExp(d)).length;
-      const act=activeDept===dep.id;
-      return `<button class="dept-tab${act?' active':''}" onclick="switchDept('${dep.id}')">
-        ${dep.icon} ${dep.id}
-        <span class="tab-count">${list.length}</span>
-        ${warn?`<span class="tab-warn">⚠ ${warn}</span>`:''}
-      </button>`;
-    }).join('');
-}
-
-function renderBar(){
-  const chips=document.getElementById('mgrChips');
-  if(activeDept==='전체'){
-    chips.innerHTML=DEPTS.map(dep=>{
-      const names=(managers[dep.id]||[]).map(m=>m.name).join(', ')||'미지정';
-      return `<span class="mgr-chip">${dChip(dep.id)} <strong>${names}</strong></span>`;
-    }).join('');
-  }else{
-    const mgrs=managers[activeDept]||[];
-    chips.innerHTML=mgrs.length
-      ?mgrs.map(m=>`<span class="mgr-chip">👤 <strong>${m.name}</strong> <span class="role-lbl">${m.role||''}</span></span>`).join('')
-      :`<span class="mgr-chip" style="color:var(--text-muted)">담당자 미지정</span>`;
-  }
-}
-
-function renderAlerts(){
-  const el=document.getElementById('alertSection');
-  const list=activeDept==='전체'?drugs:drugs.filter(d=>d.dept===activeDept);
-  const low=list.filter(isLow), soon=list.filter(d=>isSoon(d)&&!isExp(d)), exp=list.filter(isExp);
-  let h='';
-  if(low.length)  h+=`<div class="alert-banner danger" onclick="setFilter('danger',null)"><span class="alert-icon">🚨</span><div class="alert-content"><div class="alert-title">재고 부족 경고 — ${low.length}개 약품</div><div class="alert-items">${low.map(d=>`<b>${d.name}</b> (잔여 ${d.current}${d.unit}, ${stockPct(d).toFixed(0)}%)`).join(' &nbsp;·&nbsp; ')}</div></div></div>`;
-  if(soon.length) h+=`<div class="alert-banner warn" onclick="setFilter('expiring',null)"><span class="alert-icon">⚠️</span><div class="alert-content"><div class="alert-title">유효기간 임박 — ${soon.length}개 약품</div><div class="alert-items">${soon.map(d=>`<b>${d.name}</b> (${daysLeft(d)}일 후 만료)`).join(' &nbsp;·&nbsp; ')}</div></div></div>`;
-  if(exp.length)  h+=`<div class="alert-banner danger"><span class="alert-icon">❌</span><div class="alert-content"><div class="alert-title">유효기간 만료 — 즉시 폐기 ${exp.length}개</div><div class="alert-items">${exp.map(d=>`<b>${d.name}</b>`).join(' &nbsp;·&nbsp; ')}</div></div></div>`;
-  el.innerHTML=h;
-}
-
-function renderStats(){
-  const list=activeDept==='전체'?drugs:drugs.filter(d=>d.dept===activeDept);
-  const low=list.filter(isLow).length, exp=list.filter(d=>isSoon(d)||isExp(d)).length;
-  const ok=Math.max(0,list.length-low-exp);
-  document.getElementById('statsRow').innerHTML=`
-    <div class="stat-card"><div class="stat-label">전체 약품</div><div class="stat-value sv-total">${list.length}</div></div>
-    <div class="stat-card"><div class="stat-label">정상</div><div class="stat-value sv-ok">${ok}</div></div>
-    <div class="stat-card"><div class="stat-label">재고 부족</div><div class="stat-value sv-red">${low}</div></div>
-    <div class="stat-card"><div class="stat-label">기간 임박·만료</div><div class="stat-value sv-warn">${exp}</div></div>`;
-}
-
-function renderTable(){
-  const el=document.getElementById('drugTable');
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  let list=drugs.filter(d=>(activeDept==='전체'||d.dept===activeDept)&&(d.name.toLowerCase().includes(q)||(d.category||'').includes(q)));
-  if(currentFilter==='danger')   list=list.filter(isLow);
-  if(currentFilter==='expiring') list=list.filter(d=>isSoon(d)||isExp(d));
-  if(!list.length){el.innerHTML=`<div class="empty-state"><div class="ei">📭</div><p>표시할 약품이 없습니다</p></div>`;return;}
-  list.sort((a,b)=>{
-    const r=s=>s==='ok'?1:0;
-    const d=r(status(a))-r(status(b));
-    return d!==0?d:a.dept.localeCompare(b.dept);
-  });
-  el.innerHTML=list.map((d,i)=>{
-    const pct=stockPct(d);
-    const bCls=pct<=10?'bar-crit':pct<=30?'bar-low':pct<=60?'bar-med':'bar-high';
-    const rCls=isLow(d)?'row-red':(isSoon(d)||isExp(d))?'row-warn':'';
-    const dl=daysLeft(d);
-    let eCls='exp-ok',eTxt=`${dl}일`;
-    if(dl<=0){eCls='exp-expired';eTxt='만료됨 ❌';}
-    else if(dl<=7){eCls='exp-danger';eTxt=`${dl}일 남음`;}
-    else if(dl<=31){eCls='exp-warn';eTxt=`${dl}일 남음`;}
-    const st=status(d),stLbl=st==='ok'?'정상':st==='expired'?'만료':'주의';
-    const mgrs=(managers[d.dept]||[]).map(m=>m.name).join(', ')||'—';
-    const showDept=activeDept==='전체';
-    return `<div class="drug-row ${rCls}" style="animation-delay:${i*0.025}s">
-      <div>
-        <div class="d-name">${showDept?dChip(d.dept)+' ':''} ${d.name} ${pkgBadge(d.pkgType)}</div>
-        <div class="d-sub"><span>${d.category}</span>${d.location?`<span>📍 ${d.location}</span>`:''}</div>
-      </div>
-      <div class="d-unit">${d.unit}</div>
-      <div>
-        <div class="stock-nums"><b>${d.current}</b><span> / ${d.initial} ${d.unit}</span></div>
-        <div class="bar-bg"><div class="bar-fill ${bCls}" style="width:${Math.max(pct,2)}%"></div></div>
-      </div>
-      <div><span class="exp-badge ${eCls}">${d.expiry} <span style="opacity:.75;font-size:10px">${eTxt}</span></span></div>
-      <div><span class="st-badge ${st==='ok'?'st-ok':'st-warn'}"><span class="dot ${st==='ok'?'dot-ok':'dot-warn'}"></span>${stLbl}</span></div>
-      <div style="font-size:11px;color:var(--text-sub)">${mgrs}</div>
-      <div class="action-cell">
-        <button class="btn-use" onclick="openUseModal('${d.id}')">사용</button>
-        <button class="btn-pencil" onclick="openEditModal('${d.id}')">✎</button>
-      </div>
-    </div>`;
+    return `<tr>
+      <td><span class="dept-label" style="background:${deptColor}">${item['부서']}</span></td>
+      <td style="font-weight:600;">${esc(item['약품명'])}</td>
+      <td><span class="type-badge">${esc(item['종류'])}</span></td>
+      <td>
+        <div class="stock-bar"><div class="stock-bar-fill" style="width:${Math.min(s.pct,100)}%;background:${barColor}"></div></div>
+        <span style="font-weight:600;">${s.qty}</span><span style="color:var(--text3);font-size:12px;">/${s.init}</span>
+      </td>
+      <td style="${expClass}">${expDisplay}</td>
+      <td style="font-size:13px;">${statusHtml}</td>
+      <td style="font-size:13px;color:var(--text2);">${esc(item['담당자'] || '')}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-sm" onclick="openEditModal('${item.id}')">수정</button>
+          <button class="btn-sm del" onclick="deleteItem('${item.id}','${esc(item['약품명'])}')">삭제</button>
+        </div>
+      </td>
+    </tr>`;
   }).join('');
 }
 
-function renderLog(){
-  const el=document.getElementById('logList');
-  if(!usageLog.length){el.innerHTML='<div class="log-item"><span class="log-detail">사용 기록 없음</span></div>';return;}
-  el.innerHTML=usageLog.slice(-20).reverse().map(l=>
-    `<div class="log-item">
-      <div><span class="log-drug">${l.name}</span> <span class="log-detail">· ${l.dept||''} · ${l.purpose||'일반 사용'}</span></div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="log-amt">−${l.qty} ${l.unit}</span>
-        <span class="log-detail">${new Date(l.ts).toLocaleString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
-      </div>
-    </div>`
-  ).join('');
+function updateTypeFilter() {
+  const types = [...new Set(allData.map(i => i['종류']).filter(Boolean))];
+  const sel = document.getElementById('typeFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">전체 종류</option>' +
+    types.map(t => `<option value="${t}" ${t === cur ? 'selected' : ''}>${t}</option>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════
-//  DEPT / FILTER
-// ═══════════════════════════════════════════════════════
-function switchDept(id){activeDept=id;currentFilter='all';document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim()==='전체'));renderAll();}
-function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderTable();}
-
-// ═══════════════════════════════════════════════════════
-//  PICKERS
-// ═══════════════════════════════════════════════════════
-function renderPkgPicker(sel){return PKG_TYPES.map(p=>`<button type="button" class="pkg-btn${p.value===sel?' sel':''}" onclick="selectPkg('${p.value}',this)">${p.icon} ${p.label}</button>`).join('');}
-function selectPkg(v,el){document.getElementById('fPkgType').value=v;document.getElementById('fUnit').value=getPkg(v).unit;document.querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function renderDeptPicker(sel){return DEPTS.map(dep=>`<button type="button" class="dpick-btn${dep.id===sel?' dpick-'+dep.id:''}" onclick="selectDeptPick('${dep.id}',this)">${dep.icon} ${dep.id}</button>`).join('');}
-function selectDeptPick(id,el){document.getElementById('fDept').value=id;document.querySelectorAll('.dpick-btn').forEach(b=>{b.className='dpick-btn';});el.className=`dpick-btn dpick-${id}`;}
-
-// ═══════════════════════════════════════════════════════
-//  DRUG CRUD
-// ═══════════════════════════════════════════════════════
-function openAddModal(){
-  editingId=null;
-  document.getElementById('modalTitle').textContent='📦 약품 추가';
-  document.getElementById('btnDel').style.display='none';
-  ['fName','fLocation'].forEach(id=>document.getElementById(id).value='');
-  ['fInitial','fCurrent','fExpiry'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fCategory').value='점안마취제';
-  const d=activeDept==='전체'?'접수실':activeDept;
-  document.getElementById('fDept').value=d;
-  document.getElementById('deptPicker').innerHTML=renderDeptPicker(d);
-  document.getElementById('fPkgType').value='bottle';
-  document.getElementById('fUnit').value='병';
-  document.getElementById('pkgPicker').innerHTML=renderPkgPicker('bottle');
-  openModal('editModal');
+function sortBy(field) {
+  if (sortField === field) sortAsc = !sortAsc;
+  else { sortField = field; sortAsc = true; }
+  renderTable();
 }
-function openEditModal(id){
-  const d=drugs.find(x=>x.id===id);if(!d)return;
-  editingId=id;
-  document.getElementById('modalTitle').textContent='✏️ 약품 수정';
-  document.getElementById('btnDel').style.display='block';
-  document.getElementById('fName').value=d.name;
-  document.getElementById('fCategory').value=d.category;
-  document.getElementById('fLocation').value=d.location||'';
-  document.getElementById('fInitial').value=d.initial;
-  document.getElementById('fCurrent').value=d.current;
-  document.getElementById('fExpiry').value=d.expiry;
-  document.getElementById('fDept').value=d.dept;
-  document.getElementById('deptPicker').innerHTML=renderDeptPicker(d.dept);
-  const pt=d.pkgType||'bottle';
-  document.getElementById('fPkgType').value=pt;
-  document.getElementById('fUnit').value=d.unit;
-  document.getElementById('pkgPicker').innerHTML=renderPkgPicker(pt);
-  openModal('editModal');
+
+// ═══════════════════════════════════════
+// Modal / CRUD
+// ═══════════════════════════════════════
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = '약품 등록';
+  document.getElementById('editId').value = '';
+  document.getElementById('fDept').value = currentDept !== '전체' ? currentDept : '접수실';
+  document.getElementById('fName').value = '';
+  document.getElementById('fType').value = '안약';
+  document.getElementById('fExp').value = '';
+  document.getElementById('fQty').value = '';
+  document.getElementById('fInitQty').value = '';
+  document.getElementById('fManager').value = USER_NAME;
+  document.getElementById('fMemo').value = '';
+  document.getElementById('modalOverlay').style.display = '';
 }
-async function saveDrug(){
-  const name=document.getElementById('fName').value.trim();
-  const initial=parseInt(document.getElementById('fInitial').value);
-  const current=parseInt(document.getElementById('fCurrent').value);
-  const expiry=document.getElementById('fExpiry').value;
-  const dept=document.getElementById('fDept').value;
-  if(!name||isNaN(initial)||isNaN(current)||!expiry||!dept){toast('⚠️ 필수 항목을 모두 입력하세요','wrn');return;}
-  if(current>initial){toast('⚠️ 현재 수량이 최대 수량을 초과합니다','wrn');return;}
-  const obj={
-    id:editingId||uid(),dept,name,
-    category:document.getElementById('fCategory').value,
-    pkgType:document.getElementById('fPkgType').value,
-    unit:document.getElementById('fUnit').value||'개',
-    initial,current,expiry,
-    location:document.getElementById('fLocation').value.trim(),
+
+function openEditModal(id) {
+  const item = allData.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = '약품 수정';
+  document.getElementById('editId').value = id;
+  document.getElementById('fDept').value = item['부서'];
+  document.getElementById('fName').value = item['약품명'];
+  document.getElementById('fType').value = item['종류'];
+  document.getElementById('fExp').value = item['유효기간'];
+  document.getElementById('fQty').value = item['수량'];
+  document.getElementById('fInitQty').value = item['초기수량'];
+  document.getElementById('fManager').value = item['담당자'];
+  document.getElementById('fMemo').value = item['메모'] || '';
+  document.getElementById('modalOverlay').style.display = '';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+
+async function saveItem() {
+  const id = document.getElementById('editId').value;
+  const data = {
+    '부서': document.getElementById('fDept').value,
+    '약품명': document.getElementById('fName').value.trim(),
+    '종류': document.getElementById('fType').value,
+    '유효기간': document.getElementById('fExp').value,
+    '수량': document.getElementById('fQty').value,
+    '초기수량': document.getElementById('fInitQty').value,
+    '담당자': document.getElementById('fManager').value.trim(),
+    '메모': document.getElementById('fMemo').value.trim(),
   };
-  if(editingId){const i=drugs.findIndex(x=>x.id===editingId);drugs[i]=obj;toast('✅ 수정되었습니다','ok');}
-  else{drugs.push(obj);toast('✅ 약품이 추가되었습니다','ok');}
-  closeModal('editModal');
-  await save();renderAll();
-}
-async function deleteDrug(){
-  if(!editingId||!confirm('정말 삭제하시겠습니까?'))return;
-  drugs=drugs.filter(x=>x.id!==editingId);
-  closeModal('editModal');
-  await save();renderAll();toast('🗑 삭제되었습니다');
-}
 
-// ═══════════════════════════════════════════════════════
-//  USE DRUG
-// ═══════════════════════════════════════════════════════
-function openUseModal(id){
-  usingId=id;const d=drugs.find(x=>x.id===id);if(!d)return;
-  document.getElementById('useQty').value=1;
-  document.getElementById('usePurpose').value='';
-  document.getElementById('useInfo').innerHTML=
-    `<strong>${d.name} ${pkgBadge(d.pkgType)}</strong>
-     <span>${dChip(d.dept)} &nbsp;재고: <b>${d.current} ${d.unit}</b> (${stockPct(d).toFixed(0)}%)</span>`;
-  openModal('useModal');
-}
-function adjQty(delta){const i=document.getElementById('useQty');i.value=Math.max(1,(parseInt(i.value)||1)+delta);}
-async function confirmUse(){
-  const d=drugs.find(x=>x.id===usingId);if(!d)return;
-  const qty=parseInt(document.getElementById('useQty').value)||1;
-  if(qty>d.current){toast('❌ 재고가 부족합니다','err');return;}
-  d.current-=qty;
-  usageLog.push({id:uid(),drugId:d.id,name:d.name,dept:d.dept,unit:d.unit,qty,purpose:document.getElementById('usePurpose').value,ts:Date.now()});
-  closeModal('useModal');
-  await save();renderAll();
-  if(isLow(d))toast(`🚨 ${d.name} 재고 부족! (${d.current}${d.unit} 남음)`,'err');
-  else toast(`✅ ${d.name} ${qty}${d.unit} 사용 완료`,'ok');
-}
-async function clearLog(){
-  if(!usageLog.length||!confirm('사용 기록을 모두 삭제하시겠습니까?'))return;
-  usageLog=[];await save();renderLog();toast('🗑 기록 삭제');
-}
+  if (!data['약품명'] || !data['유효기간'] || !data['수량'] || !data['초기수량']) {
+    toast('필수 항목을 모두 입력하세요', 'error');
+    return;
+  }
 
-// ═══════════════════════════════════════════════════════
-//  MANAGER MODAL
-// ═══════════════════════════════════════════════════════
-function openMgrModal(){renderMgrContent();openModal('mgrModal');}
-function renderMgrContent(){
-  document.getElementById('mgrContent').innerHTML=DEPTS.map(dep=>{
-    const mgrs=managers[dep.id]||[];
-    const items=mgrs.map((m,i)=>`
-      <div class="mgr-item">
-        <input type="text" value="${m.name||''}" placeholder="담당자 이름" id="mn-${dep.id}-${i}">
-        <select class="mgr-role-sel" id="mr-${dep.id}-${i}">
-          ${['수간호사','담당간호사','수술실 책임','원무과장','약품 담당','기타'].map(r=>`<option${m.role===r?' selected':''}>${r}</option>`).join('')}
-        </select>
-        <button class="btn-rm" onclick="removeMgr('${dep.id}',${i})">✕</button>
-      </div>`).join('');
-    return `<div class="mgr-dept-block">
-      <div class="mgr-dept-label">
-        <span class="dept-chip-sm dept-${dep.id}" style="font-size:12px;padding:3px 9px">${dep.icon} ${dep.id}</span>
-      </div>
-      <div class="mgr-list" id="ml-${dep.id}">${items||'<div style="font-size:12px;color:var(--text-muted);padding:4px 0">담당자 없음</div>'}</div>
-      <button class="btn-add-mgr" onclick="addMgr('${dep.id}')">＋ 담당자 추가</button>
-    </div>`;
-  }).join('');
-}
-function addMgr(deptId){if(!managers[deptId])managers[deptId]=[];managers[deptId].push({name:'',role:'담당간호사'});renderMgrContent();}
-function removeMgr(deptId,idx){managers[deptId].splice(idx,1);renderMgrContent();}
-async function saveMgrs(){
-  DEPTS.forEach(dep=>{
-    const mgrs=managers[dep.id]||[];
-    managers[dep.id]=mgrs.map((_,i)=>({
-      name:(document.getElementById(`mn-${dep.id}-${i}`)?.value||'').trim(),
-      role:document.getElementById(`mr-${dep.id}-${i}`)?.value||'',
-    })).filter(m=>m.name);
-  });
-  closeModal('mgrModal');
-  await save();renderAll();
-  toast('✅ 담당자 정보가 저장되었습니다','ok');
-}
-
-// ═══════════════════════════════════════════════════════
-//  MODAL UTILS
-// ═══════════════════════════════════════════════════════
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
-
-// ═══════════════════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════════════════
-function toast(msg,type=''){
-  const c=document.getElementById('toastWrap');
-  const el=document.createElement('div');
-  el.className=`toast ${type}`;el.textContent=msg;c.appendChild(el);
-  setTimeout(()=>el.remove(),3000);
-}
-
-// ═══════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════
-async function init(){
-  // 1. URL 우선순위: BAKED_GS_URL(파일에 직접 입력) > localStorage
-  gsUrl = BAKED_GS_URL || localStorage.getItem(SK_URL) || '';
-  // BAKED_GS_URL이 있으면 localStorage에도 저장 (설정 화면에 표시용)
-  if(BAKED_GS_URL) localStorage.setItem(SK_URL, BAKED_GS_URL);
-
-  // 2. 로컬 데이터 먼저 표시 (즉시)
-  loadLocal();
-  updateDate();
-  renderAll();
-
-  // 3. Sheets 동기화 또는 배너 표시
-  if(gsUrl){
-    setSyncStatus('ing','동기화 중…');
-    const ok=await loadFromSheets();
-    if(ok) renderAll();
+  let result;
+  if (id) {
+    data.id = id;
+    result = await apiCall('update', data);
   } else {
-    setSyncStatus('ing','오프라인 모드');
-    const dismissed=localStorage.getItem('seouleye_banner_dismissed');
-    if(!dismissed){
-      setTimeout(()=>{ document.getElementById('connectBanner').style.display='block'; }, 400);
-    }
+    result = await apiCall('add', data);
+  }
+
+  if (result.success) {
+    toast(id ? '수정 완료' : '등록 완료', 'success');
+    closeModal();
+    loadData();
+  } else {
+    toast('저장 실패: ' + (result.error || ''), 'error');
   }
 }
 
+async function deleteItem(id, name) {
+  if (!confirm(`"${name}" 을(를) 삭제하시겠습니까?`)) return;
+  const result = await apiCall('delete&id=' + encodeURIComponent(id));
+  if (result.success) {
+    toast('삭제 완료', 'success');
+    loadData();
+  } else {
+    toast('삭제 실패', 'error');
+  }
+}
+
+// ═══════════════════════════════════════
+// Utilities
+// ═══════════════════════════════════════
+function esc(s) {
+  if (s == null) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function showLoading(show) {
+  document.getElementById('loadingArea').innerHTML = show ?
+    '<div class="loading"><div class="spinner"></div>데이터 불러오는 중...</div>' : '';
+}
+
+function toast(msg, type = '') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ═══════════════════════════════════════
+// Boot
+// ═══════════════════════════════════════
 init();
-// Auto-sync every 5 minutes
-setInterval(()=>{
-  updateDate();
-  if(gsUrl) loadFromSheets().then(ok=>{ if(ok) renderAll(); });
-  else { renderAlerts();renderStats();renderTabs(); }
-},300000);
 </script>
 </body>
 </html>
