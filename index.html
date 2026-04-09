@@ -557,21 +557,6 @@ tbody tr:hover { background: #fafbfc; }
 </head>
 <body>
 
-<!-- ═══ Setup Screen ═══ -->
-<div id="setupScreen" class="setup-screen">
-  <div class="setup-box">
-    <h1>💊 서울안과 약품 관리</h1>
-    <p class="sub">Google Apps Script URL을 설정하세요</p>
-    <label>Apps Script 웹앱 URL</label>
-    <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/..." />
-    <p class="hint">Apps Script를 배포한 후 생성되는 URL을 붙여넣으세요</p>
-    <label>사용자 이름 (담당자명)</label>
-    <input type="text" id="userNameInput" placeholder="예: 김간호" />
-    <button onclick="saveSetup()">시작하기</button>
-    <p style="margin-top:16px;font-size:12px;color:var(--text3);">설정은 이 브라우저에 저장됩니다</p>
-  </div>
-</div>
-
 <!-- ═══ App ═══ -->
 <div id="app" style="display:none;">
 
@@ -583,8 +568,6 @@ tbody tr:hover { background: #fafbfc; }
     </div>
     <div class="right">
       <span id="alertCountArea"></span>
-      <span id="userName" style="font-weight:600;"></span>
-      <button class="btn-settings" onclick="openSetup()">⚙ 설정</button>
       <button class="btn-icon" onclick="loadData()" title="새로고침">↻</button>
     </div>
   </div>
@@ -716,8 +699,7 @@ tbody tr:hover { background: #fafbfc; }
 // ═══════════════════════════════════════
 // State
 // ═══════════════════════════════════════
-let API_URL = localStorage.getItem('drugApp_apiUrl') || '';
-let USER_NAME = localStorage.getItem('drugApp_userName') || '';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwTfp_Lty37JaSDYTIkqeP8CFgeA9t0ahlqbq3v4lxEAaucH1BaUs6tVO-tltfrihzi/exec';
 let allData = [];
 let currentDept = '전체';
 let sortField = '약품명';
@@ -730,40 +712,11 @@ const DRUG_TYPES = ['안약', '1회용 안약', '안연고', '내복약', '주�
 // Init
 // ═══════════════════════════════════════
 function init() {
-  if (!API_URL || !USER_NAME) {
-    document.getElementById('setupScreen').style.display = '';
-    document.getElementById('app').style.display = 'none';
-    // Pre-fill if exists
-    if (API_URL) document.getElementById('apiUrlInput').value = API_URL;
-    if (USER_NAME) document.getElementById('userNameInput').value = USER_NAME;
-  } else {
-    showApp();
-  }
-}
-
-function saveSetup() {
-  const url = document.getElementById('apiUrlInput').value.trim();
-  const name = document.getElementById('userNameInput').value.trim();
-  if (!url) { toast('Apps Script URL을 입력하세요', 'error'); return; }
-  if (!name) { toast('사용자 이름을 입력하세요', 'error'); return; }
-  API_URL = url;
-  USER_NAME = name;
-  localStorage.setItem('drugApp_apiUrl', url);
-  localStorage.setItem('drugApp_userName', name);
   showApp();
 }
 
-function openSetup() {
-  document.getElementById('setupScreen').style.display = '';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('apiUrlInput').value = API_URL;
-  document.getElementById('userNameInput').value = USER_NAME;
-}
-
 function showApp() {
-  document.getElementById('setupScreen').style.display = 'none';
   document.getElementById('app').style.display = '';
-  document.getElementById('userName').textContent = USER_NAME;
   renderDeptTabs();
   loadData();
 }
@@ -1043,7 +996,7 @@ function openAddModal() {
   document.getElementById('fExp').value = '';
   document.getElementById('fQty').value = '';
   document.getElementById('fInitQty').value = '';
-  document.getElementById('fManager').value = USER_NAME;
+  document.getElementById('fManager').value = '';
   document.getElementById('fMemo').value = '';
   document.getElementById('modalOverlay').style.display = '';
 }
